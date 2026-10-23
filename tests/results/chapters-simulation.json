@@ -1,0 +1,40 @@
+{
+  "runs": 1000,
+  "presidentWins": 399,
+  "winsByJob": [
+    45,
+    102,
+    48,
+    37,
+    24,
+    21,
+    88,
+    34
+  ],
+  "independentRuns": 369,
+  "lossComeback": 307,
+  "boomerangs": 3000,
+  "groupsObserved": [
+    "labor",
+    "equality",
+    "shops",
+    "green",
+    "business",
+    "middle",
+    "education",
+    "rights",
+    "older",
+    "rural",
+    "security",
+    "young"
+  ],
+  "partiesObserved": [
+    "labor",
+    "green",
+    "reform",
+    "future",
+    "better"
+  ],
+  "seconds": 155,
+  "note": "자동 선택 시뮬레이션이며 사람의 재미·당선율 검증이 아닙니다."
+}
