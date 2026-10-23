@@ -2,6 +2,10 @@
 
 “그때는 맞고, 지금은 다릅니다.”
 
+**게임 접속: https://nomination-please.pages.dev**
+
+GitHub `main` 커밋은 Cloudflare Pages에서 자동 배포됩니다.
+
 가상 정당과 인물로 만드는 한국어 정치 풍자 카드게임. **개발 중인 압축 플레이판**이며 전체 기획의 완성판이 아닙니다.
 
 ## 실행

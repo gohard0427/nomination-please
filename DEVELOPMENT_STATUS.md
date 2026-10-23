@@ -32,7 +32,7 @@
 
 브라우저 제어 도구가 연결되지 않아 실제 화면·모바일 드래그·키보드·새로고침 복구의 E2E는 수행하지 못했다. 저장 데이터의 직렬화 복구는 엔진에서 검사했다. 정적 TypeScript 타입 검사는 도구 설치가 되지 않아 수행하지 못했다. 외부 의존성 설치는 네트워크 EPERM으로 실패했으며 기본 빌드·테스트는 무의존 방식으로 전환했다.
 
-Sites 비공개 프로젝트 등록만 완료했다. 제공된 실행 환경에 Sites 소스/패키징 도우미가 없고 네트워크 연결이 제한되어 소스 푸시·배포는 완료하지 못했다. 배포 URL로 플레이 가능하다고 주장하지 않는다. dist는 다른 정적 호스팅에서도 실행할 수 있다.
+GitHub gohard0427/nomination-please의 main 업로드 완료. 사용자 소유 Cloudflare Pages 프로젝트 nomination-please에 Git 연동을 설정했으며 첫 배포의 clone_repo·build·deploy가 모두 success임을 확인했다. 공개 주소 https://nomination-please.pages.dev 의 HTML 응답도 확인했다. Production 자동 배포가 켜져 있다. 실제 모바일/데스크톱 브라우저 조작 검증은 아직 수행하지 못했다.
 
 ## 주요 부족점과 다음 우선순위
 

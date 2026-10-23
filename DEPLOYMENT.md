@@ -6,12 +6,14 @@
 
 ## 전용 대상
 
-- GitHub 예정 저장소: gohard0427/nomination-please
+- GitHub 저장소: gohard0427/nomination-please
 - 브랜치: main
 - Cloudflare 계정: 사용자가 지정한 계정
-- Pages 예정 프로젝트 이름: nomination-please
+- Pages 프로젝트 이름: nomination-please
 
-이 이름은 배포 완료를 의미하지 않습니다. 기존 substation-mvp 및 작업자 명단 저장소는 사용하지 않습니다.
+공개 주소: https://nomination-please.pages.dev
+
+첫 배포 성공 확인: 2026-10-23. GitHub main의 커밋 71e9aec3ddffda758ec8cf5e14ca2d7bbbca0ead를 Cloudflare가 복제·빌드·게시했습니다. 기존 substation-mvp 및 작업자 명단 저장소는 사용하지 않습니다.
 
 ## Pages 설정
 
