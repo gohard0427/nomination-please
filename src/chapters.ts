@@ -20,6 +20,7 @@ export function contextualize(card:Card,s:State):Card {
  if(card.id==='recruit'){
   card.body+=' 당신이 결정할 수 있는 것은 캠프의 추천과 선발 절차입니다. 최종 공천은 정당의 심사를 거칩니다.';
   card.choices[0].text='공개 심사를 거쳐 청년 후보를 추천한다';card.choices[1].text='지역 경험을 우선해 추천한다';
+  if(!s.partyId){card.body='오랜 동료와 청년 활동가가 무소속 캠프의 같은 자리를 원합니다. 당신은 자기 캠프의 선발 절차를 정할 수 있습니다. 정당의 공천을 결정하는 자리는 아닙니다.';card.choices[0].text='공개 심사로 청년 활동가의 기회를 보장한다';card.choices[1].text='현장 경험을 우선하고 청년 교육을 지원한다';}
  }
  if(card.id==='president'&&!s.partyId){card.choices[1].text='무소속 전국 추천 조직을 구축한다';card.choices[1].result='당내 경선 대신 전국 추천과 후보 등록을 준비합니다. 혼자 출마해도 혼자 준비할 수는 없습니다.';}
  if(card.id==='primary'&&!s.partyId){card.title='무소속 후보 등록의 문턱';card.body='정당 경선 대신 전국의 추천과 후보 등록 요건을 갖춰야 합니다. 등록 준비를 어떻게 진행할까요?';card.choices[0].text='공개 정책 검증과 추천 모집에 집중한다';card.choices[1].text='지역별 추천 조직과 연합을 넓힌다';}
