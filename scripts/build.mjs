@@ -1,5 +1,4 @@
-import {stripTypeScriptTypes} from 'node:module';
-import {mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
-await mkdir('dist/src',{recursive:true});
-for(const name of ['content','engine','portrait','main']){let s=await readFile(`src/${name}.ts`,'utf8');s=s.replace("import './style.css';",'');s=stripTypeScriptTypes(s,{mode:'strip'}).replaceAll(".ts'",".js'");await writeFile(`dist/src/${name}.js`,s)}
-await copyFile('src/style.css','dist/src/style.css');let html=await readFile('index.html','utf8');await writeFile('dist/index.html',html.replace('</head>','<link rel="stylesheet" href="/src/style.css"></head>').replace('/src/main.ts','/src/main.js'));console.log('배포 파일 생성 완료: dist/');
+import {stripTypeScriptTypes} from 'node:module';import {mkdir,readFile,writeFile,copyFile,cp,readdir,rm} from 'node:fs/promises';
+await rm('dist',{recursive:true,force:true});await mkdir('dist/src',{recursive:true});
+for(const entry of await readdir('src',{withFileTypes:true})){if(!entry.isFile()||(!entry.name.endsWith('.ts')||entry.name.endsWith('.d.ts')))continue;const source=(await readFile(`src/${entry.name}`,'utf8')).replace("import './style.css';",'');const js=stripTypeScriptTypes(source,{mode:'strip'}).replaceAll(".ts'",".js'");await writeFile(`dist/src/${entry.name.replace(/\.ts$/,'.js')}`,js)}
+await copyFile('src/style.css','dist/src/style.css');await cp('assets','dist/assets',{recursive:true});let html=await readFile('index.html','utf8');await writeFile('dist/index.html',html.replace('</head>','<link rel="stylesheet" href="/src/style.css"></head>').replace('/src/main.ts','/src/main.js'));console.log('배포 파일 생성 완료: dist/');

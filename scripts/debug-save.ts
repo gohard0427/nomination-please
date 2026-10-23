@@ -1,0 +1,3 @@
+// 개발자 전용 CLI. 브라우저 빌드에 포함되지 않으며 개인정보를 외부 전송하지 않습니다.
+import {readFileSync} from 'node:fs';import {decode} from '../src/persistence.ts';import {projection,groupDefs,groupProjection} from '../src/support.ts';
+const filename=process.argv[2];if(!filename)throw Error('사용법: npm run debug:save -- 진행파일.json');const s=decode(readFileSync(filename,'utf8'));if(!s)throw Error('유효하지 않은 저장');console.log(JSON.stringify({turn:s.turn,scope:s.scope,public:projection(s.rows,s.scope,s.localRegion),groups:groupDefs.map((g,i)=>({name:g[1],...groupProjection(s.rows,i,s.scope,s.localRegion)})),offers:s.offers,endorsements:s.endorsements},null,2));
