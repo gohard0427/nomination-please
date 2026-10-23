@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "c8e7d781b9cb7a755b83d4ea57a80e6d595b55c5",
+  "deploymentId": "eb956734-42ba-4867-8a7f-0f60f1803974",
+  "url": "https://nomination-please.pages.dev",
+  "cloudflareStatus": "success",
+  "trigger": "github:push",
+  "httpsFilesVerified": [
+    "index.html",
+    "src/main.js",
+    "src/engine.js",
+    "src/support.js",
+    "src/viewModel.js",
+    "assets/art/jobs.webp",
+    "assets/art/npcs.webp",
+    "assets/art/leaders.webp"
+  ],
+  "tlsVerificationDisabled": false,
+  "publicChromium": "blocked: environment proxy CA not trusted by Chromium",
+  "localChromium": "passed full 60-choice flow and legacy recovery",
+  "temporaryReviewDeleted": true,
+  "otherAppsModified": false
+}

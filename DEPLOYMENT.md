@@ -41,3 +41,16 @@ GitHub 저장소의 초록색 Code → Download ZIP. 비공개 저장소는 로�
 ## 업로드 제외
 
 .env, 비밀 키, node_modules, 로컬 Sites 설정(.openai), 빌드 산출물 dist는 소스 업로드 대상에서 제외합니다. Pages가 Git 소스로부터 dist를 직접 빌드합니다.
+
+
+## v0.2.0 수정판 게시 기록
+
+- 게임: https://nomination-please.pages.dev
+- 소스 main 커밋: c8e7d781b9cb7a755b83d4ea57a80e6d595b55c5
+- Cloudflare 배포: eb956734-42ba-4867-8a7f-0f60f1803974
+- 트리거: github:push
+- 실제 clone·build·publish 성공, 공개 파일/그림이 로컬 빌드와 일치함을 TLS 검증을 유지한 HTTPS 요청으로 확인
+- 임시 검토 사이트 nomination-review-v14 삭제 완료. 게임 그림은 자체 assets/art에 보관하여 의존하지 않음
+- 원래 substation-mvp 및 substation-worker-planner 프로젝트는 수정하지 않음
+
+모바일/PC 플레이 전체 흐름·새로고침 복구·손상 파일·이전 저장 변환은 로컬 Chromium에서 검사했다. 공개 호스트의 Chromium 검사는 실행 환경 프록시의 CA 신뢰 문제로 중단됐고 인증서 검증을 끄지 않았다. 공개 HTTPS 응답과 Cloudflare 성공 상태는 별도로 검증했다. 후속 문서 커밋도 동일한 Git 자동 배포를 사용한다.

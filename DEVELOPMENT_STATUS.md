@@ -34,7 +34,9 @@ v1 원본을 남기고 백업한 뒤 v2를 생성한다. 원래 발언·선거·
 
 ## 배포 확인 기록
 
-공개 주소는 https://nomination-please.pages.dev 이며 GitHub main → Cloudflare Pages Git 자동 배포를 사용한다. 이 문서 작성 시점에는 로컬 검증과 업로드 준비까지 완료했다. 실제 원격 배포·공개 브라우저 검사·검토 사이트 삭제 결과는 작업 종료 시 DEPLOYMENT.md에 추가 기록한다.
+공개 주소는 https://nomination-please.pages.dev 이며 GitHub main → Cloudflare Pages Git 자동 배포를 사용한다. main의 c8e7d781b9cb7a755b83d4ea57a80e6d595b55c5 커밋에서 Git 자동 배포 eb956734-42ba-4867-8a7f-0f60f1803974가 성공했다. 실제 Cloudflare 로그에서 clone·build·publish 성공을 확인했다. 공개 HTML·JS·캐릭터 3종 이미지가 로컬 빌드와 해시까지 일치함을 TLS 검증을 유지한 요청으로 확인했다. 임시 nomination-review-v14 프로젝트 삭제 성공과 계정 목록에서의 제거도 확인했다. 기존 두 앱은 수정하지 않았다.
+
+공개 주소에서 Chromium 검사를 시도했으나 이 실행 환경의 프록시 인증서 신뢰 문제(ERR_CERT_AUTHORITY_INVALID)로 중단됐다. 인증서 검증을 끄지 않았다. 모바일·PC 전체 플레이와 v1 복구는 로컬 Chromium에서 실제 검사했으며, 공개 사이트는 Cloudflare 상태와 HTTPS 파일 응답을 따로 검증했다.
 
 ## 남은 한계
 

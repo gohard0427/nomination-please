@@ -13,9 +13,9 @@
 - [x] v1 원본 백업/변환, 결과 단계 복구, 손상 파일 거부
 - [x] TypeScript 정적 검사, 엔진 검증, 로컬 브라우저 전체 회차
 - [x] 최종 시뮬레이션 결과 기록
-- [ ] GitHub main에 관련 변경 업로드
-- [ ] Cloudflare 실제 빌드·공개 브라우저 확인
-- [ ] 검토 전용 nomination-review-v14 사이트 삭제
+- [x] GitHub main에 관련 변경 업로드
+- [x] Cloudflare 실제 빌드·공개 HTTPS 파일 확인 (공개 Chromium은 환경 인증서로 제한)
+- [x] 검토 전용 nomination-review-v14 사이트 삭제
 
 # 이후 개선
 
