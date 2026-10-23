@@ -1,0 +1,14 @@
+{
+  "name": "nomination-please",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/build.mjs && node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --experimental-strip-types tests/engine.test.ts",
+    "simulate": "node --experimental-strip-types tests/simulate.ts"
+  },
+  "engines": {
+    "node": ">=24.3.0"
+  }
+}
