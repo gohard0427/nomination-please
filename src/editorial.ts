@@ -1,8 +1,6 @@
 import type {Card} from './content.ts';import type {State} from './engine.ts';
-export const prologueCopy=[
- {text:'제가 한 말, 저부터 지키겠습니다.',note:'수사에 협조합니다. 신뢰를 지킬 수 있지만 캠프 일정과 자원이 묶입니다.',result:'원칙은 지켰습니다. 캠프 일정표는 지키지 못했습니다.'},
- {text:'이번 특검은 정치 특검입니다.',note:'지지층을 결집할 수 있지만 과거 발언에 대한 해명이 필요합니다.',result:'지지자들은 박수를 쳤습니다. 방송사는 과거 영상을 한 번 더 틀었습니다.'}
-] as const;
+import {prologues} from './prologue.ts';
+export const prologueCopy=prologues[0].choices;
 export const electionCopy={retry:'보관해요. 다음에는 다르게 해봅시다.',retire:'버려요. 이번에는 정말 내려놓겠습니다.',retryResult:'현수막은 접었습니다. 출마 의사는 접지 않았습니다.',retireResult:'처음으로 다음 선거 없는 달력을 펼쳤습니다.'};
 // 첫 문장은 인물의 목소리, 실제 행동·비용은 본문과 costNotes가 설명한다.
 export const dialogue:Record<string,[string,string]>={
