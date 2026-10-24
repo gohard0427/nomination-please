@@ -1,8 +1,8 @@
 import {validPrologue} from './prologue.ts';
 import {validReality} from './reality.ts';
 import {FINANCE_FLAG} from './finance.ts';
-import {validSavedRoute} from './route.ts';
-import {createState,newRoute,catalog,cardSignals,getCard,SAVE_KEY,varietyPool,type State,type NPC} from './engine.ts';
+import {validSavedRoute,repairRetryRoutes} from './route.ts';
+import {createState,newRoute,catalog,cardSignals,getCard,random,SAVE_KEY,varietyPool,type State,type NPC} from './engine.ts';
 import {cards,later} from './content.ts';import {createRows,projection,logit,type Row} from './support.ts';import {parties} from './parties.ts';
 const legacyRoute=[...cards,...later].map(c=>c.id);
 const isNumber=(x:unknown)=>typeof x==='number'&&Number.isFinite(x);
@@ -37,6 +37,6 @@ export function migrateV1(old:any):State|null{if(!old||old.version!==1||!Number.
  s.legal={status:String(old.legal?.status??'없음'),truth:String(old.legal?.truth??'미확인'),conclusion:String(old.legal?.conclusion??'없음'),revealed:old.legal?.status==='종결'||old.legal?.status==='의혹 검증 완료'};
  s.office=old.title==='국회의원'?'assemblyMember':old.title==='지방의원'?'localMember':old.title==='대통령'?'president':'none';s.officeUntil=s.office==='none'||s.office==='president'?null:s.year*12+8+48;s.ended=old.ended;s.completed=old.stage==='ending';if(old.turn===36&&old.stage==='play'){s.stage='ending';s.ended=old.ended??'마지막 출마';s.completed=true}return validState(s)?s:null;
 }
-export function decode(raw:string):State|null{try{if(raw.length>2000000)return null;const parsed=JSON.parse(raw);if(parsed?.version===1)return migrateV1(parsed);if(parsed?.version===2){parsed.version=3;parsed.finance={illicit:0,partyGrants:[]};parsed.interruptions=[];if(Array.isArray(parsed.flags)&&!parsed.flags.includes(FINANCE_FLAG))parsed.flags.push(FINANCE_FLAG);}return validState(parsed)?parsed:null}catch{return null}}
+export function decode(raw:string):State|null{try{if(raw.length>2000000)return null;const parsed=JSON.parse(raw);if(parsed?.version===1)return migrateV1(parsed);if(parsed?.version===2){parsed.version=3;parsed.finance={illicit:0,partyGrants:[]};parsed.interruptions=[];if(Array.isArray(parsed.flags)&&!parsed.flags.includes(FINANCE_FLAG))parsed.flags.push(FINANCE_FLAG);}if(!validState(parsed))return null;repairRetryRoutes(parsed,varietyPool,()=>random(parsed));return validState(parsed)?parsed:null}catch{return null}}
 export type StorageLike=Pick<Storage,'getItem'|'setItem'>;
-export function loadState(storage:StorageLike){const current=storage.getItem(SAVE_KEY);if(current){const s=decode(current);if(s)return s;throw Error('저장 파일을 읽지 못했습니다. 원본을 유지했습니다. 설정에서 원본을 내보낼 수 있습니다.')}for(const key of ['nomination-please-v2','nomination-please-v1']){const old=storage.getItem(key);if(!old)continue;const migrated=decode(old);if(!migrated)throw Error('이전 저장을 변환하지 못했습니다. 원본은 그대로 보관했습니다.');storage.setItem(key+'-backup',old);storage.setItem(SAVE_KEY,JSON.stringify(migrated));return migrated;}return null}
+export function loadState(storage:StorageLike){const current=storage.getItem(SAVE_KEY);if(current){const s=decode(current);if(s){if(JSON.stringify(s.flags)!==JSON.stringify(JSON.parse(current).flags)&&!storage.getItem('nomination-please-before-retry-fix'))storage.setItem('nomination-please-before-retry-fix',current);return s;}throw Error('저장 파일을 읽지 못했습니다. 원본을 유지했습니다. 설정에서 원본을 내보낼 수 있습니다.')}for(const key of ['nomination-please-v2','nomination-please-v1']){const old=storage.getItem(key);if(!old)continue;const migrated=decode(old);if(!migrated)throw Error('이전 저장을 변환하지 못했습니다. 원본은 그대로 보관했습니다.');storage.setItem(key+'-backup',old);storage.setItem(SAVE_KEY,JSON.stringify(migrated));return migrated;}return null}

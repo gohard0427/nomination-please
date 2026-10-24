@@ -1,3 +1,4 @@
+import {parseRetryQuestion} from './retry-content.ts';
 import {varietyCards} from './variety-content.ts';
 import type {Card} from './content.ts';
 import type {State} from './engine.ts';
@@ -6,7 +7,7 @@ const introduction=new Set(['wage','redtape','inheritance','rent','care','forest
 const local=new Set(['soup','leader','investigation','poster','press','housing','rival','youth','bus','betrayal','appeal','family-clue','audit','donation','family','door','debate','promise','campaign','rain']);
 const central=new Set(['return','party-switch','law','national','freepress','recruit','ally','fatigue','faction','responsibility']);
 const extraChapters=new Map(varietyCards.map(c=>[c.id,c.chapter]));
-export function chapterFor(id:string):State['phase'] {return extraChapters.get(id)??(introduction.has(id)?'prePolitics':local.has(id)?'local':central.has(id)?'central':'presidential')}
+export function chapterFor(id:string):State['phase'] {return parseRetryQuestion(id)?.phase??extraChapters.get(id)??(introduction.has(id)?'prePolitics':local.has(id)?'local':central.has(id)?'central':'presidential')}
 export const chapterLabels={prePolitics:'01 입문 전, 나의 원칙',local:'02 공천과 첫 선거',central:'03 다시, 중앙으로',presidential:'04 대권 도전'};
 export function chapterContext(s:State){const last=s.elections.at(-1);const phase=s.stage==='count'&&last&&!last.won?(last.name==='첫 지방선거'?'local':last.name==='국회의원 선거'?'central':'presidential'):s.stage==='play'?chapterFor(s.route[s.cursor]??'last'):s.phase;return {phase,label:chapterLabels[phase],role:phase==='prePolitics'?'주민으로서의 참여 · 요구와 제안':phase==='local'?(s.cursor<=s.route.indexOf('appeal')?'공천 도전자 · 지역 활동과 당내 경쟁':'지방선거 후보 · 지역 공약과 검증'):phase==='central'?(s.office==='localMember'?'지방의원 · 지역 의정과 국회 도전':s.office==='assemblyMember'?'국회의원 · 입법과 정치 연합':'원외 정치인 · 재기와 국회 도전'):'대선 도전자 · 국가 비전과 후보 검증'};}
 /** 명칭만 바꾸지 않고 선택·결과도 실제 권한에 맞춘다. 효과와 발언 기록은 이 카드를 사용한다. */

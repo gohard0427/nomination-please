@@ -1,6 +1,6 @@
 {
   "name": "nomination-please",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "type": "module",
   "scripts": {
     "dev": "node scripts/build.mjs && node scripts/serve.mjs",

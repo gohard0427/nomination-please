@@ -1,3 +1,4 @@
+import {RETRY_QUESTIONS,parseRetryQuestion,type RetryPhase} from './retry-content.ts';
 import {chooseReality,realityDue} from './reality.ts';
 import {CAREER_FLAG} from './career.ts';
 import type {State} from './engine.ts';
@@ -14,9 +15,11 @@ export function eligible(card:VarietyCard,s:State){if(card.id.startsWith('balanc
 export function isVariety(s:State){return s.flags.includes(VARIETY_FLAG)}
 export function slotChapter(slot:string):Chapter{return slot==='?origin'?'prePolitics':slot.slice(1) as Chapter}
 export function drawForSlot(s:State,slot:string,all:Map<string,VarietyCard>,roll:()=>number,position=s.cursor):string {
- const block=retryBlocks(s).find(b=>position>=b.start&&position<b.start+8);const used=new Set(block?s.route.slice(block.start,block.start+8).filter((_,i)=>block.start+i!==position):s.route.filter((_,i)=>i!==position));if(block)for(const id of ['democracy','party-offer','leader','investigation','housing','youth','betrayal','family-clue','audit','family','return','law','freepress','ally','president','primary','family-check','cross-debate'])used.add(id);const phase=slotChapter(slot);
- const candidates=[...all.values()].filter(c=>c.chapter===phase&&!(c.kind==='memory'&&s.route.slice(0,position).includes(c.id))&&!c.id.startsWith('retry-')&&!used.has(c.id)&&eligible(c,s)&&!(c.id==='career-activist-donor'&&position<2)&&!s.pending.some(p=>p.id===c.id&&p.due>position));
- if(!candidates.length)throw Error('사용 가능한 사건이 없습니다: '+slot);
+ const block=retryBlocks(s).find(b=>position>=b.start&&position<b.start+8);const used=new Set(s.route.filter((_,i)=>i!==position));for(const f of s.flags){const m=/^분기:(.+):[01]$/.exec(f);if(m)used.add(m[1]);}if(block)for(const id of ['democracy','party-offer','leader','investigation','housing','youth','betrayal','family-clue','audit','family','return','law','freepress','ally','president','primary','family-check','cross-debate'])used.add(id);const phase=slotChapter(slot);const seenTitles=new Set(s.history.map(h=>h.title));
+ const candidates=[...all.values()].filter(c=>c.chapter===phase&&!(block&&seenTitles.has(c.title))&&!(c.kind==='memory'&&s.route.slice(0,position).includes(c.id))&&!c.id.startsWith('retry-')&&!used.has(c.id)&&eligible(c,s)&&!(c.id==='career-activist-donor'&&position<2)&&!s.pending.some(p=>p.id===c.id&&p.due>position));
+ if(block&&position===block.start&&!used.has('retry-'+phase))return 'retry-'+phase;
+ if(block&&s.flags.includes(RETRY_QUESTIONS+block.start)&&position===block.start+2)return `retry-followup:${phase}:${block.start}:2`;
+ if(!candidates.length){if(block&&s.flags.includes(RETRY_QUESTIONS+block.start))return `retry-followup:${phase}:${block.start}:${position-block.start}`;throw Error('사용 가능한 사건이 없습니다: '+slot);}
  const due=s.pending.find(p=>p.due<=position&&candidates.some(c=>c.id===p.id));if(due)return due.id;
  const careerPriority=candidates.find(c=>c.id===(phase==='local'?'career-rival-meet':phase==='central'&&s.job===3?'career-law-justices':phase==='prePolitics'&&s.job===0&&position>=2?'career-activist-donor':''));if(careerPriority)return careerPriority.id;
  const funding=candidates.find(c=>c.id==='balance-fund-'+phase);if(funding)return funding.id;
@@ -36,17 +39,22 @@ export function validGeneratedRoute(route:unknown,job:number,original:string[],a
 export function asPool(card:any,chapter:Chapter):VarietyCard{return {...card,chapter,kind:card.id==='fatigue'?'light':'conflict',costNotes:card.costNotes??['현장과 원칙에 투자 · 자원과 관계의 비용','다른 접근을 택함 · 이후 검증과 설명의 책임'],signals:card.signals??[[{topic:'region',stance:.6,strength:.45}],[{topic:'region',stance:-.15,strength:.45}]]};}
 export {varietyCards};
 
-export const retryTemplates:Record<'local'|'central'|'presidential',string[]>={
+export const legacyRetryTemplates:Record<'local'|'central'|'presidential',string[]>={
  local:['retry-local','?local','appeal','?local','campaign','debate','?local','rain'],
  central:['retry-central','?central','party-switch','?central','national','recruit','?central','responsibility'],
  presidential:['retry-presidential','?presidential','cabinet','?presidential','policy','tv','?presidential','last']
 };
+export const retryTemplates:Record<RetryPhase,string[]>={local:[...Array(7).fill('?local'),'rain'],central:[...Array(7).fill('?central'),'responsibility'],presidential:[...Array(7).fill('?presidential'),'last']};
+export function templateFor(s:Pick<State,'flags'>,phase:RetryPhase,start:number){return s.flags.includes(RETRY_QUESTIONS+start)?retryTemplates[phase]:legacyRetryTemplates[phase]}
 export function retryBlocks(s:Pick<State,'flags'>){return s.flags.filter(f=>f.startsWith('재도전:')).map(f=>{const [,phase,start]=f.split(':');return {phase:phase as keyof typeof retryTemplates,start:Number(start)}})}
-export function slotsForState(s:State,original:string[]){const slots=slotsFor(original);for(const b of retryBlocks(s))slots.splice(b.start,0,...retryTemplates[b.phase]);return slots;}
+export function slotsForState(s:State,original:string[]){const slots=slotsFor(original);for(const b of retryBlocks(s))slots.splice(b.start,0,...templateFor(s,b.phase,b.start));return slots;}
 export function validSavedRoute(s:State,original:string[],legacy:string[],all:Map<string,VarietyCard>){
  if(!Array.isArray(s.route)||s.route.length>1000||!Array.isArray(s.flags))return false;
- const blocks=retryBlocks(s);let end=-1;const base=[...s.route];
- for(const b of blocks){if(!retryTemplates[b.phase]||!Number.isInteger(b.start)||b.start<=end||b.start<1||b.start+8>s.route.length)return false;const boss={local:'rain',central:'responsibility',presidential:'last'}[b.phase];if(s.route[b.start-1]!==boss)return false;const template=retryTemplates[b.phase];for(let i=0;i<8;i++){const id=s.route[b.start+i],slot=template[i];if(!slot.startsWith('?')){if(id!==slot)return false;}else{const card=all.get(id);if(!card||card.chapter!==b.phase||card.jobs&&!card.jobs.includes(s.job))return false;}}end=b.start+7;}
+ const blocks=retryBlocks(s);if(s.flags.filter(f=>f.startsWith(RETRY_QUESTIONS)).some(f=>!blocks.some(b=>f===RETRY_QUESTIONS+b.start)))return false;let end=-1;const base=[...s.route];
+ for(const b of blocks){if(!retryTemplates[b.phase]||!Number.isInteger(b.start)||b.start<=end||b.start<1||b.start+8>s.route.length)return false;const boss={local:'rain',central:'responsibility',presidential:'last'}[b.phase];if(s.route[b.start-1]!==boss)return false;const template=templateFor(s,b.phase,b.start);for(let i=0;i<8;i++){const id=s.route[b.start+i],slot=template[i];if(!slot.startsWith('?')){if(id!==slot)return false;}else{const dynamic=parseRetryQuestion(id);if(dynamic){if(!s.flags.includes(RETRY_QUESTIONS+b.start)||dynamic.phase!==b.phase||dynamic.start!==b.start||dynamic.slot!==i)return false;}else{const card=all.get(id);if(!card||card.chapter!==b.phase||card.jobs&&!card.jobs.includes(s.job))return false;}}}end=b.start+7;}
  for(const b of [...blocks].reverse())base.splice(b.start,8);
  return [JSON.stringify(original),JSON.stringify(legacy)].includes(JSON.stringify(base))||s.flags.includes(VARIETY_FLAG)&&validGeneratedRoute(base,s.job,original,all);
 }
+
+/** 이전 저장의 완료된 기록과 결과는 두고, 재도전의 아직 답하지 않은 질문만 한 번 교체한다. */
+export function repairRetryRoutes(s:State,all:Map<string,VarietyCard>,roll:()=>number){let repaired=false;for(const b of retryBlocks(s)){if(s.cursor>=b.start+8||s.flags.includes(RETRY_QUESTIONS+b.start))continue;s.flags.push(RETRY_QUESTIONS+b.start);const begin=Math.max(s.cursor,b.start);for(let i=begin;i<b.start+7;i++)s.route[i]='';for(let i=begin;i<b.start+7;i++)s.route[i]=drawForSlot(s,'?'+b.phase,all,roll,i);repaired=true;}return repaired;}
