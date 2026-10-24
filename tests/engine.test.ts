@@ -1,3 +1,4 @@
+import {catalog} from '../src/engine.ts';import {editorialCard,prologueCopy} from '../src/editorial.ts';
 import {test} from 'node:test';import assert from 'node:assert/strict';
 import {createState as engineCreateState,getCard,applyChoice,acknowledge,resume,retryElection,currentOffer,publicStats,newRoute,retire,type State} from '../src/engine.ts';import {decode,loadState} from '../src/persistence.ts';import {cards,later} from '../src/content.ts';import {createRows,projection,groupProjection,applySignals,weights,policyIds,groupDefs} from '../src/support.ts';import {publicView} from '../src/viewModel.ts';import {roundVotes,runElection} from '../src/election.ts';import {parties} from '../src/parties.ts';
 const createState=(job=0,seed=Date.now()>>>0)=>engineCreateState(job,seed,'classic');
@@ -51,3 +52,17 @@ test('지출로 잔고0이 되면 선택 전 경고·0 생존 선택은 유지',
 test('기초의원 기반은 출발 지역 중심이고 전국 기반으로 복제하지 않음',()=>{const s=engineCreateState(1,4);const home=s.rows.filter(r=>r.region===s.localRegion),outside=s.rows.filter(r=>r.region!==s.localRegion);const avg=(rs:typeof s.rows,key:'opinion'|'organization')=>rs.reduce((n,r)=>n+r[key],0)/rs.length;assert(avg(home,'opinion')>avg(outside,'opinion'));assert(avg(home,'organization')>avg(outside,'organization'));assert.deepEqual(engineCreateState(1,4),s);});
 test('인지도 증가는 여전히 유리하되 높은 구간의 득표 효과는 완만함',()=>{const rows=createRows(6,1);rows.forEach(r=>{r.opinion=.7;r.organization=.3});const vote=(a:number)=>{const r=structuredClone(rows);r.forEach(row=>row.awareness=a);return runElection(r,'national',1,-1,0,2030).votes[0]};assert(vote(.99)>vote(.82));assert(vote(.99)-vote(.82)<vote(.47)-vote(.30));});
 test('미신고 자금 반환과 법률 대응도 실제 장부 기준 예상 잔액을 표시',()=>{let s=engineCreateState(0,9);s.stats.funds=0;s=acknowledge(applyChoice(s,getCard(s),1));s.stats.funds=3;s.pending.find(p=>p.id==='funds-exposure')!.due=0;const v=publicView(s);assert.equal(v.card!.id,'funds-exposure');for(const i of [0,1] as const){const r=applyChoice(s,getCard(s),i);assert.equal(v.card!.choices[i].fundsAfter,publicStats(r).funds);}assert(v.card!.choices[0].fundingWarning);});
+
+
+test('대사 개편은 모든 사건의 선택 효과·발언 주제·등장 조건을 보존한다',()=>{
+ const mechanics=(card:any)=>{const c=structuredClone(card);delete c.body;delete c.costNotes;c.choices.forEach((x:any)=>{delete x.text;delete x.result});return c};
+ for(let job=0;job<8;job++){const s=engineCreateState(job,123);for(const original of catalog){const card=structuredClone(original);const before=mechanics(card);editorialCard(card,s);assert.deepEqual(mechanics(card),before,original.id);assert(card.choices.every(c=>c.text.length>8),original.id)}}
+});
+test('무소속 대사와 법조인 친구 대사는 실제 상황에 맞고 저장된 과거를 고치지 않는다',()=>{
+ const s=engineCreateState(3,123);s.partyId=null;
+ const betrayal=editorialCard(structuredClone(catalog.find(c=>c.id==='betrayal')!),s);assert(betrayal.choices[1].text.includes('연합을 떠나'));assert(!betrayal.choices[1].text.includes('당이 버렸'));
+ const primary=editorialCard(structuredClone(catalog.find(c=>c.id==='primary')!),s);assert(primary.choices[0].text.includes('시민 추천'));
+ const law=editorialCard(structuredClone(catalog.find(c=>c.id==='law')!),s);assert(law.choices[1].text.includes('어디까지 갔는지만'));
+ let old=until(createState(0,7),'audit');old.statements[0].text='과거 저장에서 실제로 남긴 특검 원칙';const snapshot=JSON.stringify(old.statements);assert(getCard(old).body.includes(old.statements[0].text));assert.equal(JSON.stringify(old.statements),snapshot);
+ assert.equal(prologueCopy[1].text,'이번 특검은 정치 특검입니다.');
+});

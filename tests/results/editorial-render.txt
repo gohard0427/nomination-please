@@ -1,0 +1,5 @@
+
+> nomination-please@0.3.3 test:render
+> node tests/render.mjs
+
+UI 렌더 검사 7시나리오 통과: 막대·낙선 재도전·은퇴·자금 위기 지원·자금 위기 종료·프롤로그 대사. 실제 브라우저 검사가 아닙니다.
