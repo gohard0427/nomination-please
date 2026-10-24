@@ -1,3 +1,4 @@
+import {chooseReality,type RealityNote} from './reality.ts';
 import {editorialCard} from './editorial.ts';
 import {balanceCard,BALANCE_FLAG} from './balance.ts';
 import {CAREER_FLAG,rivals,hasCareer,careerCard} from './career.ts';
@@ -14,8 +15,8 @@ import {runElection,type Election} from './election.ts';
 export type Statement={id:string;turn:number;topic:string;text:string;principle:string;strength:1|2|3;exposure:number;contextTags:string[]};
 export type NPC={id:string;role:string;relationship:number;trust:number;loyalty:number;ambition:number;influence:number;goals:string[];memoryTags:string[];knownFacts:string[];secretIds:string[]};
 export type PublicChange={key:'support'|'funds'|'fame'|'party';before:number|null;after:number|null};
-export type Outcome={title:string;speaker:string;choice:string;result:string;news:string[];changes:PublicChange[];scopeChange?:{oldScope:string;newScope:string;before:number|null;after:number|null}};
-export type History={turn:number;title:string;choice:string;result:string;news:string[];changes:PublicChange[]};
+export type Outcome={title:string;speaker:string;choice:string;result:string;news:string[];changes:PublicChange[];reality?:RealityNote;scopeChange?:{oldScope:string;newScope:string;before:number|null;after:number|null}};
+export type History={reality?:RealityNote;turn:number;title:string;choice:string;result:string;news:string[];changes:PublicChange[]};
 export type State={version:3;finance:Finance;interruptions:Interruption[];seed:number;initialSeed:number;turn:number;cursor:number;route:string[];job:number;year:number;month:number;birthYear:number;calendarOrigin:number;age:number;party:string;partyId:string|null;partyHistory:string[];stats:Stats;rows:Row[];scope:'local'|'national';localRegion:number;phase:'prePolitics'|'local'|'central'|'presidential';office:'none'|'localMember'|'assemblyMember'|'president';officeUntil:number|null;statements:Statement[];history:History[];npcs:NPC[];flags:string[];elections:Election[];legal:{status:string;truth:string;conclusion:string;revealed:boolean};pending:{id:string;due:number;source:string}[];stage:'play'|'result'|'count'|'ending';title:string;ended?:string;outcome:Outcome|null;afterResult:'play'|'count';signals:{topic:PolicyId;stance:number;cardId:string}[];evidence:Evidence[];endorsements:{groupId:string;sourceIds:string[];turn:number}[];lastOfferTurn:number;offers:Offer[];context:Context;completed:boolean;legacy?:boolean};
 export const names=['고단비','나원칙','차도약','문장수','한보름','신새봄','유정도','서중심','봉봉수','한민국','윤다정','차새로','정버팀','도초록'];
 const roles=['보좌관','당대표','라이벌','기자','누나','청년 당원','법률 조력자','계파 수장','지역 조직','대통령','당대표','당대표','당대표','당대표'];
@@ -56,6 +57,8 @@ export function applyChoice(current:State,event:Card,index:0|1):State{
  if(current.stage!=='play'||(index!==0&&index!==1)||event.id!==getCard(current).id)return current;
  const card=getCard(current);if(card.id==='funds-crisis'||card.id==='funds-exposure')return applyFinanceChoice(current,card,index);
  const s=structuredClone(current),choice=card.choices[index],before=publicStats(s),beforeRows=structuredClone(s.rows),signals=cardSignals(card,index);const out:Outcome={title:card.title,speaker:card.speaker,choice:choice.text,result:choice.result,news:[],changes:[]};
+ if(!s.flags.some(f=>f.startsWith('현실 자료 시작:')))s.flags.push('현실 자료 시작:'+s.turn);
+ const reality=chooseReality(s,card,index);if(reality)out.reality=reality;
  for(const [k,v] of Object.entries(choice.effect)){if(k==='support'||k==='fame')continue;if(k==='funds'){changeFunds(s,v);continue;}s.stats[k as keyof Stats]=clamp(s.stats[k as keyof Stats]+v,0,100)}
  const cost=-(choice.effect.funds??0);const resourceRatio=cost>0?Math.min(1,availableFunds(current)/cost):1;if(resourceRatio<1)out.result+=' 자금이 부족해 소규모 현장 활동으로 바꿨습니다.';
  const repetitions=signals.map(signal=>s.signals.filter(a=>a.topic===signal.topic&&Math.sign(a.stance)===Math.sign(signal.stance)).length);
@@ -100,7 +103,7 @@ export function applyChoice(current:State,event:Card,index:0|1):State{
  refreshNext(s,newRoute,varietyPool,()=>random(s));
  const after=publicStats(s);for(const k of ['support','funds','fame','party'] as const)if(before[k]!==after[k])out.changes.push({key:k,before:before[k],after:after[k]});
  const pub=projection(s.rows,s.scope,s.localRegion);s.stats.support=pub.support??0;s.stats.fame=pub.fame;
- s.history.push({turn:s.turn-1,title:card.title,choice:choice.text,result:out.result,news:out.news,changes:out.changes});s.outcome=out;s.stage='result';return s;
+ s.history.push({turn:s.turn-1,title:card.title,choice:choice.text,result:out.result,news:out.news,changes:out.changes,...(out.reality?{reality:out.reality}:{})});s.outcome=out;s.stage='result';return s;
 }
 export function acknowledge(s:State):State{if(s.stage!=='result')return s;return {...s,stage:s.afterResult,outcome:null}}
 export function resume(s:State):State{if(s.stage!=='count'||!s.elections.at(-1)?.won)return s;return {...s,stage:s.cursor>=s.route.length?'ending':'play',completed:s.cursor>=s.route.length}}
