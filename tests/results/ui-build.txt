@@ -1,0 +1,7 @@
+
+> nomination-please@0.5.0 build
+> tsc --noEmit && node scripts/build.mjs
+
+(node:15047) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+배포 파일 생성 완료: dist/

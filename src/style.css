@@ -26,3 +26,38 @@
 
 /* 현실의 자료는 게임 속 뉴스와 시각적으로 구분한다. */
 .reality-note{margin:24px 0;padding:21px;border:1px solid #a7bbb7;border-left:4px solid #e3bb7e;border-radius:12px;background:#162b30;color:#f2e2c9;overflow-wrap:anywhere}.reality-note h3{margin:9px 0 14px;font-size:19px;line-height:1.5}.reality-note p{font-size:14px;line-height:1.9}.reality-note .eyebrow{font-size:10px;color:#a9cec2}.reality-reflection{padding-top:12px;border-top:1px solid #516563}.reality-note details{margin-top:15px}.reality-note summary{cursor:pointer;font-size:13px;color:#ecc78f;min-height:32px}.reality-note ul{padding-left:18px}.reality-note li{margin:10px 0;font-size:12px;line-height:1.8}.reality-note a{color:#acd6df;text-decoration:underline}.reality-note a:focus-visible,.reality-note summary:focus-visible{outline:2px solid #efc68b;outline-offset:4px}.history-entry .reality-note h3{font-size:16px}@media(max-width:780px){.reality-note{padding:16px}.reality-note h3{font-size:18px}.reality-note p{font-size:13px}}
+
+/* v0.5.0 — 기자회견 첫 화면과 읽기 속도 개선 */
+.press-landing{max-width:1320px;padding-top:65px;gap:42px;align-items:center;grid-template-columns:1fr 1.1fr}
+.press-landing h1{font-size:clamp(42px,4.8vw,66px);letter-spacing:-2.5px;margin:18px 0 27px}
+.reporter-question{font-size:clamp(20px,2vw,27px);font-weight:800;line-height:1.6;color:#f4d6b0;letter-spacing:-.7px;margin-bottom:18px}
+.press-landing .intro{font-size:16px;line-height:1.9}.press-landing .title-actions{flex-wrap:wrap;margin:26px 0 15px}
+.landing-meta{font-size:12px;color:#abbab5;line-height:1.8}.landing-motto{font-size:13px;color:#cea887;margin-top:22px}
+.press-hero{margin:0;overflow:hidden;background:#1e2b31;border:1px solid #65564c;border-radius:18px;box-shadow:12px 14px 0 #243138;min-width:0}
+.press-hero>img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;display:block}
+.press-live{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;font-size:12px;font-weight:700;color:#e9ddcc;border-bottom:1px solid #4b5554}.on-record{color:#e89a84;white-space:nowrap;font-size:10px}
+.breaking-news{display:flex;align-items:stretch;background:#25343a;font-size:15px;line-height:1.7}.breaking-news b{flex-shrink:0;display:flex;align-items:center;background:#e9a06f;color:#172328;padding:12px 16px}.breaking-news span{padding:12px 16px;word-break:keep-all}
+.landing-promise{grid-column:1/-1;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;padding:23px 0 34px;color:#acbbb4;font-size:13px}
+.important-scene .speaker-row{align-items:flex-end;gap:17px;margin-bottom:22px}.scene-portrait{width:152px;flex-shrink:0;border:1px solid #61736b;border-radius:12px;overflow:hidden;background:#152229}.scene-portrait .character-art{width:100%;height:114px}.scene-portrait>span{display:block;padding:8px 9px;font-size:11px;line-height:1.6;color:#ebcfaa;background:#26382f}
+.prologue-card .speaker-row>.character-art{width:110px;height:90px;border-radius:12px}
+.relationship-feedback{padding:12px 15px 12px 30px;border-left:3px solid #abc9a5;background:#192d26;border-radius:0 8px 8px 0;font-size:13px;line-height:1.9;color:#c8dcc1;margin:14px 0 20px}
+.extra-news,.reality-details{border-top:1px solid #4b625c;margin-top:15px;padding-top:8px}.extra-news summary,.reality-note summary{min-height:44px;display:list-item;padding:10px 0;line-height:1.8;color:#edc494;font-size:13px;cursor:pointer}
+.extra-news summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.reality-note .reality-brief{margin-bottom:9px}.reality-note h3{font-size:18px}.reality-note .eyebrow{letter-spacing:1px;font-size:11px}
+.result-actions{position:sticky;bottom:0;padding:12px 0 max(10px,env(safe-area-inset-bottom));background:linear-gradient(#22362eeb,#22362e);z-index:2;margin-top:15px}.result-actions .primary{width:100%}.result-screen h2{margin-bottom:18px}.result-screen{padding-bottom:8px}
+.story-card h2:focus,.result-screen h2:focus{outline:none}.info{min-width:44px;min-height:44px}.menu-toggle,.close{min-width:44px;min-height:44px}
+@media(max-width:1150px){.press-landing{gap:30px}.press-landing h1{font-size:46px}.reporter-question{font-size:22px}.press-live{font-size:11px}.breaking-news{font-size:13px}}
+@media(max-width:780px){
+ .press-landing{display:flex;flex-direction:column;align-items:stretch;max-width:560px;padding:30px 22px 0;gap:27px}
+ .press-landing h1{font-size:clamp(35px,9.5vw,49px);letter-spacing:-1.8px;margin:15px 0 20px}.press-landing .eyebrow{font-size:11px;letter-spacing:1px}
+ .reporter-question{font-size:21px;line-height:1.6;margin-bottom:15px}.desktop-break{display:none}.press-landing .intro{font-size:15px;line-height:1.9;margin-bottom:0}
+ .press-landing .title-actions{margin:21px 0 12px;gap:10px}.press-landing .title-actions button{width:100%;font-size:16px;min-height:54px}.landing-meta{font-size:11px;margin-bottom:0}.landing-motto{font-size:12px;margin:16px 0 0}
+ .press-hero{box-shadow:5px 6px 0 #243138;border-radius:13px}.press-live{padding:11px 13px;font-size:11px}.press-live .on-record{font-size:9px}.breaking-news{font-size:12px}.breaking-news b{padding:10px 12px}.breaking-news span{padding:10px 12px}
+ .landing-promise{flex-direction:column;gap:9px;font-size:12px;padding:21px 0 28px}
+ .story-card{padding:20px}.story-card h2{font-size:27px;line-height:1.5;margin-bottom:17px}.story-card>p{font-size:16px;line-height:1.85}.speaker-row{margin-bottom:20px}.speaker-row>div>span{font-size:12px}.speaker-row p{font-size:11px;line-height:1.7;margin-top:6px}
+ .choices button{padding:17px;min-height:0}.choices strong{font-size:17px;line-height:1.65}.choices span{font-size:13px;line-height:1.8;margin-top:8px}.choices button small{font-size:11px;margin-bottom:7px}
+ .stats .stat-name span{font-size:11px}.stat-name .stat-glyph{width:16px;height:16px}.stats .stat-tile{padding:10px 3px}.stat-caption{display:none}.stats .stat-number b{font-size:24px}.stat-number .stat-change{font-size:11px}.chapter{font-size:12px}.scope-note{font-size:12px;margin:7px 0 14px}.chapter-label{font-size:13px}
+ .important-scene .speaker-row{gap:12px;align-items:center}.scene-portrait{width:118px}.scene-portrait .character-art{height:91px}.scene-portrait>span{font-size:11px;padding:7px}.prologue-card .speaker-row>.character-art{width:95px;height:85px}
+ .outcome h2{font-size:23px;line-height:1.65}.outcome>p:not(.eyebrow){font-size:15px}.news-item{font-size:14px;line-height:1.85}.reality-note p{font-size:15px;line-height:1.85}.reality-note{padding:16px;margin:20px 0}.reality-note summary,.extra-news summary{font-size:13px}.save-status{font-size:11px}.result-actions{padding-bottom:max(10px,env(safe-area-inset-bottom))}.job-confirm{padding-bottom:max(15px,env(safe-area-inset-bottom))}
+ .dialog p{font-size:15px}.dialog small{font-size:12px}.dialog .relation p{font-size:14px}.dialog .history-entry strong{font-size:14px}
+}
+@media(max-width:360px){.game-layout{padding-left:12px;padding-right:12px}.stats{gap:4px}.stat-name{gap:2px}.stat-name .stat-glyph{display:none}.stats .stat-number b{font-size:22px}.stat-number .stat-change{font-size:10px}.press-landing{padding-left:18px;padding-right:18px}.reporter-question{font-size:19px}.scene-portrait{width:102px}.scene-portrait .character-art{height:80px}}
