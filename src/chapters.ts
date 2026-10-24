@@ -1,12 +1,14 @@
+import {varietyCards} from './variety-content.ts';
 import type {Card} from './content.ts';
 import type {State} from './engine.ts';
 /** 진행 순번이나 입당 여부 대신 사건의 정치적 맥락으로 챕터를 구분한다. */
 const introduction=new Set(['wage','redtape','inheritance','rent','care','forest','party-offer','migration','peace','school','balance','equal','democracy']);
 const local=new Set(['soup','leader','investigation','poster','press','housing','rival','youth','bus','betrayal','appeal','family-clue','audit','donation','family','door','debate','promise','campaign','rain']);
 const central=new Set(['return','party-switch','law','national','freepress','recruit','ally','fatigue','faction','responsibility']);
-export function chapterFor(id:string):State['phase'] {return introduction.has(id)?'prePolitics':local.has(id)?'local':central.has(id)?'central':'presidential'}
+const extraChapters=new Map(varietyCards.map(c=>[c.id,c.chapter]));
+export function chapterFor(id:string):State['phase'] {return extraChapters.get(id)??(introduction.has(id)?'prePolitics':local.has(id)?'local':central.has(id)?'central':'presidential')}
 export const chapterLabels={prePolitics:'01 입문 전, 나의 원칙',local:'02 공천과 첫 선거',central:'03 다시, 중앙으로',presidential:'04 대권 도전'};
-export function chapterContext(s:State){const phase=s.stage==='play'?chapterFor(s.route[s.cursor]??'last'):s.phase;return {phase,label:chapterLabels[phase],role:phase==='prePolitics'?'주민으로서의 참여 · 요구와 제안':phase==='local'?(s.cursor<=s.route.indexOf('appeal')?'공천 도전자 · 지역 활동과 당내 경쟁':'지방선거 후보 · 지역 공약과 검증'):phase==='central'?(s.office==='localMember'?'지방의원 · 지역 의정과 국회 도전':s.office==='assemblyMember'?'국회의원 · 입법과 정치 연합':'원외 정치인 · 재기와 국회 도전'):'대선 도전자 · 국가 비전과 후보 검증'};}
+export function chapterContext(s:State){const last=s.elections.at(-1);const phase=s.stage==='count'&&last&&!last.won?(last.name==='첫 지방선거'?'local':last.name==='국회의원 선거'?'central':'presidential'):s.stage==='play'?chapterFor(s.route[s.cursor]??'last'):s.phase;return {phase,label:chapterLabels[phase],role:phase==='prePolitics'?'주민으로서의 참여 · 요구와 제안':phase==='local'?(s.cursor<=s.route.indexOf('appeal')?'공천 도전자 · 지역 활동과 당내 경쟁':'지방선거 후보 · 지역 공약과 검증'):phase==='central'?(s.office==='localMember'?'지방의원 · 지역 의정과 국회 도전':s.office==='assemblyMember'?'국회의원 · 입법과 정치 연합':'원외 정치인 · 재기와 국회 도전'):'대선 도전자 · 국가 비전과 후보 검증'};}
 /** 명칭만 바꾸지 않고 선택·결과도 실제 권한에 맞춘다. 효과와 발언 기록은 이 카드를 사용한다. */
 export function contextualize(card:Card,s:State):Card {
  if(card.id==='press'){card.body='지역 예산 설명회 뒤 기자가 당신이 모은 공개 자료를 요청했습니다. 당신은 예산 편성자가 아닙니다. 자료에는 불편한 숫자와 아직 확인하지 못한 항목이 섞여 있습니다.';}
