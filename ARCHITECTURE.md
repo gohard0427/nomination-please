@@ -65,3 +65,7 @@ retry-content.ts는 현재 선거·이력에서 맥락형 준비/후속/개표 �
 
 ## v0.6 확장
 choice-revision.ts는63개 대사·결과와 정책 대비, patch-content.ts는 신규 사건·85선택 경로, campaign.ts는 실제 발언 회수·후보 확정·토론 맥락을 담당한다. constituencies.ts의16단체는 기존144유권자 행/12집단을 대체하지 않고 성향·정당 거리·신뢰·참여를 보완한다. 새로운 가치관은 유권자 선호와 선택에 따라 실제 호감에 반영한다. campaign-ui.ts는 상태를 읽어 토론·지지기반·피날레 HTML을 만든다. 저장v3 아래 optional campaign.version1을 검증하고, PATCH_FLAG 경로만 expandedRoute를 사용한다. 이전 회차에는 가짜 과거 단체 관계를 넣지 않는다.
+
+
+## v0.7 정당과 입당 일정
+정당ID를 유지해 future/green 표시 이름을 바꾸고 guardian을 추가했다. 새 유권자 행은6당 선호, 이전 행은 검증 후6번째0을 추가한다. campaign.version2는22개 단체를 가지며 이전v1의16개와 구분한다. ideology-content.ts는종교/엘리트/입당 질문, ideology-memory.ts는 실제 발언 기록과 후속 맥락, party-entry.ts는 입당 후 조건부 질문 삽입과 위치 표식을 담당한다. slotsForState/validSavedRoute는 재도전 블록과 입당 삽입을 시간순으로 복원하며 이미 끝난 질문을 교체하지 않는다.

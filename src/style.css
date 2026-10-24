@@ -71,7 +71,7 @@
 .party-status:after{content:"";position:absolute;left:0;bottom:0;width:45px;height:2px;background:var(--party-accent);border-radius:2px}
 .party-pill{white-space:nowrap;word-break:keep-all;flex-shrink:0;max-width:100%}
 .game-layout .chapter-label{border-left-color:var(--party-accent)}
-.game-layout .story-card{border-top:2px solid var(--party-accent)}
+.game-layout .story-card{border-top:5px solid var(--party-accent)}
 .support-footer{margin:22px 0 0;display:flex;justify-content:center}
 .support-footer .text-button{width:auto;min-height:44px;padding:10px 8px;font-size:13px;text-align:center}
 @media(prefers-reduced-motion:no-preference){.party-name,.party-status:after,.game-layout .chapter-label,.game-layout .story-card{transition:color .2s,border-color .2s,background-color .2s}}

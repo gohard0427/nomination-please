@@ -1,3 +1,4 @@
+import {guardianAffinity} from './parties.ts';
 export const policyIds=['economy','labor','tax','housing','welfare','environment','migration','diplomacy','education','region','society','reform'] as const;
 export type PolicyId=typeof policyIds[number];
 export const policyNames:Record<PolicyId,string>={economy:'경제·기업',labor:'노동',tax:'조세·재산',housing:'부동산',welfare:'복지',environment:'환경·에너지',migration:'이민·외국인',diplomacy:'외교·안보',education:'교육·사교육',region:'지역 균형 발전',society:'사회·문화',reform:'정치 개혁'};
@@ -25,7 +26,7 @@ export function createRows(job:number,seed:number):Row[]{const rows:Row[]=[];for
  const weight=(region===0?(age===0?1.5:1)*(work===2?1.2:1):region===1?(work===0?1.7:1): (age===2?1.8:1)*(work===3?1.4:1));
  const affinity=job===0?memberships[10]:job===1?(region===seed%3?1:.15):job===2?memberships[1]:job===3?memberships[10]:job===4?memberships[7]:job===5?memberships[4]:job===6?.75:memberships[11];
  const awareness=clamp((job===6?.38:job===2?.2:.13)+(region===1?.1:0)+affinity*.09,.02,.85);
- rows.push({id:`r${region}-p${profile}`,region,profile,weight,awareness,opinion:logit(.53+affinity*.15)+noise*.12,trust:.45,organization:job===0?.33:job===1?(region===seed%3?.38:.2):.2,partyPrefs:[-.15+asset*.4,.15+priority*.25,.1+(age===0?.3:0),work===0?.6:-.1,priority===1?.55:-.1],memberships,preferences,salience});}
+ rows.push({id:`r${region}-p${profile}`,region,profile,weight,awareness,opinion:logit(.53+affinity*.15)+noise*.12,trust:.45,organization:job===0?.33:job===1?(region===seed%3?.38:.2):.2,partyPrefs:[-.15+asset*.4,.15+priority*.25,.1+(age===0?.3:0),work===0?.6:-.1,priority===1?.55:-.1,guardianAffinity(preferences,[])],memberships,preferences,salience});}
  for(let region=0;region<3;region++){const total=rows.filter(r=>r.region===region).reduce((a,r)=>a+r.weight,0);rows.filter(r=>r.region===region).forEach(r=>r.weight/=total)}return rows}
 export function applySignals(rows:Row[],signals:Signal[],options:{scope:'local'|'national';local:number;trust:number;organization:number;exposure:number;context:Context;repetitions:number[]}){
  for(const r of rows){let change=0;let denominator=0;signals.forEach((s,i)=>{const k=policyIds.indexOf(s.topic);const context=(s.topic==='economy'&&options.context.economy==='slow'?1.2:s.topic==='migration'&&options.context.laborShortage?1.15:s.topic==='housing'&&options.context.housingPressure?1.15:1);const localWeight=options.scope==='local'?(r.region===options.local?1:.25):1;const repeat=1/(1+(options.repetitions[i]||0)*.4);const partisanFit=1+clamp(options.trust/100,-.15,.15);change+=r.salience[k]*r.preferences[k]*s.stance*(s.strength??1)*.58*context*repeat*localWeight*partisanFit;denominator+=r.salience[k]});
