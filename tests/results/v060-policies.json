@@ -1,0 +1,191 @@
+{
+  "note": "전략별·직업별 동일 시드, 선거별 재도전 최대2회, 자금 위기에서는 불법 지원을 거절하는 자동 정책. 표본이 작고 사람의 승률이 아님.",
+  "report": [
+    {
+      "policy": "자금 관리 공통 전략",
+      "rows": [
+        {
+          "job": 0,
+          "runs": 5,
+          "wins": 3,
+          "winRate": 60,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 3
+        },
+        {
+          "job": 1,
+          "runs": 5,
+          "wins": 5,
+          "winRate": 100,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 5
+        },
+        {
+          "job": 2,
+          "runs": 5,
+          "wins": 3,
+          "winRate": 60,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 3
+        },
+        {
+          "job": 3,
+          "runs": 5,
+          "wins": 3,
+          "winRate": 60,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 3
+        },
+        {
+          "job": 4,
+          "runs": 5,
+          "wins": 2,
+          "winRate": 40,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 2
+        },
+        {
+          "job": 5,
+          "runs": 5,
+          "wins": 2,
+          "winRate": 40,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 2
+        },
+        {
+          "job": 6,
+          "runs": 5,
+          "wins": 5,
+          "winRate": 100,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 5
+        },
+        {
+          "job": 7,
+          "runs": 5,
+          "wins": 4,
+          "winRate": 80,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 4
+        }
+      ]
+    },
+    {
+      "policy": "직업 활용 전략",
+      "rows": [
+        {
+          "job": 0,
+          "runs": 5,
+          "wins": 3,
+          "winRate": 60,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 3
+        },
+        {
+          "job": 1,
+          "runs": 5,
+          "wins": 5,
+          "winRate": 100,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 5
+        },
+        {
+          "job": 2,
+          "runs": 5,
+          "wins": 3,
+          "winRate": 60,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 3
+        },
+        {
+          "job": 3,
+          "runs": 5,
+          "wins": 3,
+          "winRate": 60,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 3
+        },
+        {
+          "job": 4,
+          "runs": 5,
+          "wins": 2,
+          "winRate": 40,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 2
+        },
+        {
+          "job": 5,
+          "runs": 5,
+          "wins": 2,
+          "winRate": 40,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 2
+        },
+        {
+          "job": 6,
+          "runs": 5,
+          "wins": 5,
+          "winRate": 100,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 5
+        },
+        {
+          "job": 7,
+          "runs": 5,
+          "wins": 4,
+          "winRate": 80,
+          "firstElections": 5,
+          "cashEnds": 0,
+          "firstCrisisCount": 0,
+          "firstCrisisAverageTurn": null,
+          "legalWins": 4
+        }
+      ]
+    }
+  ]
+}

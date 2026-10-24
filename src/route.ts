@@ -1,3 +1,4 @@
+import {expandedRoute,PATCH_FLAG,parliamentIds,debateIds,narrativeTopic} from './patch-content.ts';
 import {RETRY_QUESTIONS,parseRetryQuestion,type RetryPhase} from './retry-content.ts';
 import {chooseReality,realityDue} from './reality.ts';
 import {CAREER_FLAG} from './career.ts';
@@ -11,7 +12,7 @@ const local=new Set(['soup','poster','press','rival','bus','donation','door','de
 const central=new Set(['fatigue','faction']);
 export function slotsFor(original:string[]){return original.map((id,i)=>i===0?'?origin':!optional.has(id)?id:introductory.has(id)?'?prePolitics':local.has(id)?'?local':central.has(id)?'?central':'?presidential')}
 export function remembered(s:State,id:string,index:0|1){return s.flags.includes(`분기:${id}:${index}`)}
-export function eligible(card:VarietyCard,s:State){if(card.id.startsWith('balance-fund-')&&(!s.flags.includes(VARIETY_FLAG)||s.stats.funds+s.finance.illicit>16||s.flags.some(f=>f.startsWith('분기:'+card.id+':'))))return false;if(card.id.startsWith('career-')&&!s.flags.includes(CAREER_FLAG))return false;if(['ai-junior-ladder','ai-small-business','ai-regional-jobs','ai-time-dividend','majority-limits','election-integrity','career-law-ai-judge','career-star-history','career-military-enemy'].includes(card.id)&&s.history.some(h=>h.title===card.title))return false;if(card.jobs&&!card.jobs.includes(s.job)||card.parties&&!card.parties.includes(s.partyId??''))return false;if(card.requires&&!card.requires.every(([id,index])=>remembered(s,id,index)))return false;if(card.id==='friend-leak')return s.flags.includes('동기 통화 유출 가능');if(card.id==='friend-verdict')return s.flags.includes('동기 통화 보도');return true}
+export function eligible(card:VarietyCard,s:State){if(parliamentIds.includes(card.id)&&!s.elections.some(e=>e.name==='국회의원 선거'&&e.won))return false;if((debateIds.includes(card.id)||card.id.endsWith('-reply'))&&!s.flags.includes('대선 후보 검증 완료'))return false;if(card.id==='names-return'&&!s.statements.some(x=>x.topic==='명단 공개'))return false;if(card.id==='press-return'&&!s.statements.some(x=>x.topic==='언론 자유'))return false;if(card.id.startsWith('balance-fund-')&&(!s.flags.includes(VARIETY_FLAG)||s.stats.funds+s.finance.illicit>16||s.flags.some(f=>f.startsWith('분기:'+card.id+':'))))return false;if(card.id.startsWith('career-')&&!s.flags.includes(CAREER_FLAG))return false;if(['ai-junior-ladder','ai-small-business','ai-regional-jobs','ai-time-dividend','majority-limits','election-integrity','career-law-ai-judge','career-star-history','career-military-enemy'].includes(card.id)&&s.history.some(h=>h.title===card.title))return false;if(card.jobs&&!card.jobs.includes(s.job)||card.parties&&!card.parties.includes(s.partyId??''))return false;if(card.requires&&!card.requires.every(([id,index])=>remembered(s,id,index)))return false;if(card.id==='friend-leak')return s.flags.includes('동기 통화 유출 가능');if(card.id==='friend-verdict')return s.flags.includes('동기 통화 보도');return true}
 export function isVariety(s:State){return s.flags.includes(VARIETY_FLAG)}
 export function slotChapter(slot:string):Chapter{return slot==='?origin'?'prePolitics':slot.slice(1) as Chapter}
 export function drawForSlot(s:State,slot:string,all:Map<string,VarietyCard>,roll:()=>number,position=s.cursor):string {
@@ -28,8 +29,8 @@ export function drawForSlot(s:State,slot:string,all:Map<string,VarietyCard>,roll
  const field=candidates.find(c=>c.id===(phase==='local'?({4:'balance-press-field',5:'balance-official-field',7:'balance-military-field'} as Record<number,string>)[s.job]:phase==='prePolitics'&&position>=3?({4:'origin-press',5:'origin-official',7:'origin-military'} as Record<number,string>)[s.job]:''));if(field)return field.id;
  const memories=candidates.filter(c=>c.kind==='memory');if(memories.length)return memories[Math.floor(roll()*memories.length)].id;
  const last=s.route[s.cursor-1];const lastKind=all.get(last)?.kind;
- const weight=(c:VarietyCard)=>c.kind==='memory'?10:c.kind==='origin'?8:c.jobs?7:c.kind==='party'?6:c.kind===lastKind?1:3;
- const withMaterial=realityDue(s)?candidates.filter(c=>chooseReality(s,c,0)):[];const pool=withMaterial.length?withMaterial:candidates;
+ const topic=(c:VarietyCard)=>narrativeTopic(c.id)??c.signals?.[0]?.[0]?.topic??'activity';const previous=s.route.slice(Math.max(0,position-5),position).map(id=>all.get(id)).filter(Boolean) as VarietyCard[];const weight=(c:VarietyCard)=>{const base=c.kind==='memory'?10:c.kind==='origin'?8:c.jobs?7:c.kind==='party'?6:c.kind===lastKind?1:3;const repeats=previous.filter(p=>topic(p)===topic(c)).length;return base/(1+repeats*3);};
+ const withMaterial=realityDue(s)?candidates.filter(c=>chooseReality(s,c,0)):[];let pool=withMaterial.length?withMaterial:candidates;const lastTwo=previous.slice(-2);if(lastTwo.length===2&&topic(lastTwo[0])===topic(lastTwo[1])){const varied=pool.filter(c=>topic(c)!==topic(lastTwo[0]));if(varied.length)pool=varied;}
  let pick=roll()*pool.reduce((n,c)=>n+weight(c),0);return pool.find(c=>(pick-=weight(c))<0)?.id??pool.at(-1)!.id;
 }
 export function fillRoute(s:State,original:string[],all:Map<string,VarietyCard>,roll:()=>number){const slots=slotsFor(original);s.route=slots.map(x=>x.startsWith('?')?'':x);slots.forEach((slot,i)=>{if(slot.startsWith('?'))s.route[i]=drawForSlot(s,slot,all,roll,i)});}
@@ -47,13 +48,13 @@ export const legacyRetryTemplates:Record<'local'|'central'|'presidential',string
 export const retryTemplates:Record<RetryPhase,string[]>={local:[...Array(7).fill('?local'),'rain'],central:[...Array(7).fill('?central'),'responsibility'],presidential:[...Array(7).fill('?presidential'),'last']};
 export function templateFor(s:Pick<State,'flags'>,phase:RetryPhase,start:number){return s.flags.includes(RETRY_QUESTIONS+start)?retryTemplates[phase]:legacyRetryTemplates[phase]}
 export function retryBlocks(s:Pick<State,'flags'>){return s.flags.filter(f=>f.startsWith('재도전:')).map(f=>{const [,phase,start]=f.split(':');return {phase:phase as keyof typeof retryTemplates,start:Number(start)}})}
-export function slotsForState(s:State,original:string[]){const slots=slotsFor(original);for(const b of retryBlocks(s))slots.splice(b.start,0,...templateFor(s,b.phase,b.start));return slots;}
+export function slotsForState(s:State,original:string[]){const slots=slotsFor(s.flags.includes(PATCH_FLAG)?expandedRoute(original):original);for(const b of retryBlocks(s))slots.splice(b.start,0,...templateFor(s,b.phase,b.start));return slots;}
 export function validSavedRoute(s:State,original:string[],legacy:string[],all:Map<string,VarietyCard>){
  if(!Array.isArray(s.route)||s.route.length>1000||!Array.isArray(s.flags))return false;
  const blocks=retryBlocks(s);if(s.flags.filter(f=>f.startsWith(RETRY_QUESTIONS)).some(f=>!blocks.some(b=>f===RETRY_QUESTIONS+b.start)))return false;let end=-1;const base=[...s.route];
  for(const b of blocks){if(!retryTemplates[b.phase]||!Number.isInteger(b.start)||b.start<=end||b.start<1||b.start+8>s.route.length)return false;const boss={local:'rain',central:'responsibility',presidential:'last'}[b.phase];if(s.route[b.start-1]!==boss)return false;const template=templateFor(s,b.phase,b.start);for(let i=0;i<8;i++){const id=s.route[b.start+i],slot=template[i];if(!slot.startsWith('?')){if(id!==slot)return false;}else{const dynamic=parseRetryQuestion(id);if(dynamic){if(!s.flags.includes(RETRY_QUESTIONS+b.start)||dynamic.phase!==b.phase||dynamic.start!==b.start||dynamic.slot!==i)return false;}else{const card=all.get(id);if(!card||card.chapter!==b.phase||card.jobs&&!card.jobs.includes(s.job))return false;}}}end=b.start+7;}
  for(const b of [...blocks].reverse())base.splice(b.start,8);
- return [JSON.stringify(original),JSON.stringify(legacy)].includes(JSON.stringify(base))||s.flags.includes(VARIETY_FLAG)&&validGeneratedRoute(base,s.job,original,all);
+ if(s.flags.includes(PATCH_FLAG))return validGeneratedRoute(base,s.job,expandedRoute(original),all);return [JSON.stringify(original),JSON.stringify(legacy)].includes(JSON.stringify(base))||s.flags.includes(VARIETY_FLAG)&&validGeneratedRoute(base,s.job,original,all);
 }
 
 /** 이전 저장의 완료된 기록과 결과는 두고, 재도전의 아직 답하지 않은 질문만 한 번 교체한다. */
