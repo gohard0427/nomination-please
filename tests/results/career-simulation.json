@@ -1,0 +1,50 @@
+{
+  "runs": 1000,
+  "fundingEnds": 729,
+  "deals": 816,
+  "exposures": 649,
+  "presidentWins": 43,
+  "winsByJob": [
+    0,
+    12,
+    9,
+    5,
+    2,
+    1,
+    12,
+    2
+  ],
+  "independentRuns": 628,
+  "lossComeback": 28,
+  "retries": 1154,
+  "retirements": 228,
+  "boomerangs": 2015,
+  "firstQuestionKinds": 40,
+  "eventKindsObserved": 184,
+  "friendUses": 12,
+  "friendQuick": 8,
+  "friendLeaks": 4,
+  "groupsObserved": [
+    "shops",
+    "business",
+    "middle",
+    "labor",
+    "green",
+    "rights",
+    "equality",
+    "rural",
+    "young",
+    "education",
+    "older",
+    "security"
+  ],
+  "partiesObserved": [
+    "labor",
+    "green",
+    "reform",
+    "better",
+    "future"
+  ],
+  "seconds": 106,
+  "note": "자동 선택, 선거별 최대 두 번 재도전 후 은퇴하는 테스트 정책. 사람의 재미·실제 당선율 검증이 아님."
+}

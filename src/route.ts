@@ -1,3 +1,4 @@
+import {CAREER_FLAG} from './career.ts';
 import type {State} from './engine.ts';
 import {varietyCards,type VarietyCard,type Chapter} from './variety-content.ts';
 export function mixSeed(seed:number){let x=seed>>>0;x=Math.imul(x^(x>>>16),0x7feb352d);x=Math.imul(x^(x>>>15),0x846ca68b);return (x^(x>>>16))>>>0}
@@ -8,14 +9,15 @@ const local=new Set(['soup','poster','press','rival','bus','donation','door','de
 const central=new Set(['fatigue','faction']);
 export function slotsFor(original:string[]){return original.map((id,i)=>i===0?'?origin':!optional.has(id)?id:introductory.has(id)?'?prePolitics':local.has(id)?'?local':central.has(id)?'?central':'?presidential')}
 export function remembered(s:State,id:string,index:0|1){return s.flags.includes(`분기:${id}:${index}`)}
-export function eligible(card:VarietyCard,s:State){if(card.jobs&&!card.jobs.includes(s.job)||card.parties&&!card.parties.includes(s.partyId??''))return false;if(card.requires&&!card.requires.every(([id,index])=>remembered(s,id,index)))return false;if(card.id==='friend-leak')return s.flags.includes('동기 통화 유출 가능');if(card.id==='friend-verdict')return s.flags.includes('동기 통화 보도');return true}
+export function eligible(card:VarietyCard,s:State){if(card.id.startsWith('career-')&&!s.flags.includes(CAREER_FLAG))return false;if(card.jobs&&!card.jobs.includes(s.job)||card.parties&&!card.parties.includes(s.partyId??''))return false;if(card.requires&&!card.requires.every(([id,index])=>remembered(s,id,index)))return false;if(card.id==='friend-leak')return s.flags.includes('동기 통화 유출 가능');if(card.id==='friend-verdict')return s.flags.includes('동기 통화 보도');return true}
 export function isVariety(s:State){return s.flags.includes(VARIETY_FLAG)}
 export function slotChapter(slot:string):Chapter{return slot==='?origin'?'prePolitics':slot.slice(1) as Chapter}
 export function drawForSlot(s:State,slot:string,all:Map<string,VarietyCard>,roll:()=>number,position=s.cursor):string {
  const block=retryBlocks(s).find(b=>position>=b.start&&position<b.start+8);const used=new Set(block?s.route.slice(block.start,block.start+8).filter((_,i)=>block.start+i!==position):s.route.filter((_,i)=>i!==position));if(block)for(const id of ['democracy','party-offer','leader','investigation','housing','youth','betrayal','family-clue','audit','family','return','law','freepress','ally','president','primary','family-check','cross-debate'])used.add(id);const phase=slotChapter(slot);
- const candidates=[...all.values()].filter(c=>c.chapter===phase&&!(c.kind==='memory'&&s.route.slice(0,position).includes(c.id))&&!c.id.startsWith('retry-')&&!used.has(c.id)&&eligible(c,s)&&!s.pending.some(p=>p.id===c.id&&p.due>position));
+ const candidates=[...all.values()].filter(c=>c.chapter===phase&&!(c.kind==='memory'&&s.route.slice(0,position).includes(c.id))&&!c.id.startsWith('retry-')&&!used.has(c.id)&&eligible(c,s)&&!(c.id==='career-activist-donor'&&position<2)&&!s.pending.some(p=>p.id===c.id&&p.due>position));
  if(!candidates.length)throw Error('사용 가능한 사건이 없습니다: '+slot);
  const due=s.pending.find(p=>p.due<=position&&candidates.some(c=>c.id===p.id));if(due)return due.id;
+ const careerPriority=candidates.find(c=>c.id===(phase==='local'?'career-rival-meet':phase==='central'&&s.job===3?'career-law-justices':phase==='prePolitics'&&s.job===0&&position>=2?'career-activist-donor':''));if(careerPriority)return careerPriority.id;
  const memories=candidates.filter(c=>c.kind==='memory');if(memories.length)return memories[Math.floor(roll()*memories.length)].id;
  const last=s.route[s.cursor-1];const lastKind=all.get(last)?.kind;
  const weight=(c:VarietyCard)=>c.kind==='memory'?10:c.kind==='origin'?8:c.jobs?7:c.kind==='party'?6:c.kind===lastKind?1:3;
