@@ -1,4 +1,5 @@
 import {v,type VarietyCard} from './event-factory.ts';
+import {balanceCards} from './balance-content.ts';
 import {careerCards} from './career-content.ts';
 import {expansionCards} from './expansion-content.ts';
 export type {VarietyCard,Chapter} from './event-factory.ts';
@@ -80,4 +81,4 @@ v('friend-verdict','presidential','무혐의 뒤에도 질문은 남습니다','
 v('clean-law-return','presidential','공개 자문 명단이 돌아왔습니다','기자 · 문장수','동기 인연을 공개 법률 자문으로 운영했던 기록을 기자가 확인했습니다. 명단뿐 아니라 비용과 검토 범위도 남아 있습니다.',['다른 캠프에도 같은 공개 기준을 제안한다',{trust:8,fame:3},'전화번호부가 검증 자료가 됐습니다. 처음부터 공개해 둔 덕입니다.','일관된 원칙 · 타인과의 기준 협의'],['내 캠프의 자문 기록을 계속 갱신한다',{trust:6,org:4,funds:-2},'동기회 총무가 한숨을 쉬었습니다. 이번에도 회의록을 써야 한답니다.','장기 신뢰 · 기록 관리 비용'],'reform',{kind:'memory',jobs:[3],requires:[['origin-law',0],['law',0]]})
 ];
 
-export const varietyCards:VarietyCard[]=[...baseCards,...expansionCards,...careerCards];
+export const varietyCards:VarietyCard[]=[...baseCards,...expansionCards,...careerCards,...balanceCards];
