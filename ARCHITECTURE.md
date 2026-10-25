@@ -69,3 +69,6 @@ choice-revision.ts는63개 대사·결과와 정책 대비, patch-content.ts는 
 
 ## v0.7 정당과 입당 일정
 정당ID를 유지해 future/green 표시 이름을 바꾸고 guardian을 추가했다. 새 유권자 행은6당 선호, 이전 행은 검증 후6번째0을 추가한다. campaign.version2는22개 단체를 가지며 이전v1의16개와 구분한다. ideology-content.ts는종교/엘리트/입당 질문, ideology-memory.ts는 실제 발언 기록과 후속 맥락, party-entry.ts는 입당 후 조건부 질문 삽입과 위치 표식을 담당한다. slotsForState/validSavedRoute는 재도전 블록과 입당 삽입을 시간순으로 복원하며 이미 끝난 질문을 교체하지 않는다.
+
+## v0.8 정치 사건
+politics.ts는 시작 당적·본선 패배 횟수·현직 대통령 임기·단일화 선출·부메랑·별명을 처리한다. world-content.ts의12주제는 일반 카드 슬롯에 챕터별1개씩 예약한다. candidates.ts의 ID·정당·의제·SVG를 후보 계산/표시가 공유한다. 선거 계산은 두 상대의 실제 정당 기반을 받는다. 외부 저장v3는 선택 당시 자료 brief와 결과 relationships를 선택적으로 검증한다.

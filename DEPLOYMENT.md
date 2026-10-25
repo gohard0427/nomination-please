@@ -54,3 +54,6 @@ GitHub 저장소의 초록색 Code → Download ZIP. 비공개 저장소는 로�
 - 원래 substation-mvp 및 substation-worker-planner 프로젝트는 수정하지 않음
 
 모바일/PC 플레이 전체 흐름·새로고침 복구·손상 파일·이전 저장 변환은 로컬 Chromium에서 검사했다. 공개 호스트의 Chromium 검사는 실행 환경 프록시의 CA 신뢰 문제로 중단됐고 인증서 검증을 끄지 않았다. 공개 HTTPS 응답과 Cloudflare 성공 상태는 별도로 검증했다. 후속 문서 커밋도 동일한 Git 자동 배포를 사용한다.
+
+## v0.8 캐시와 검증
+public/_headers로 HTML/게임 모듈을 재검증하도록 지정한다. main의 커밋을 Cloudflare 자동 빌드가 배포한다. npm run test:browser:patch로 공개 주소 또는 로컬 빌드를 확인할 수 있다(TEST_BASE_URL). QA fixture는 별도의 브라우저 localStorage만 사용하며 서버 데이터를 쓰지 않는다.

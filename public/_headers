@@ -1,0 +1,6 @@
+/src/*
+  Cache-Control: public, max-age=0, must-revalidate
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/play/*
+  Cache-Control: public, max-age=0, must-revalidate

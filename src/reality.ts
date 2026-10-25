@@ -1,7 +1,7 @@
 import type {Card} from './content.ts';
 import type {State} from './engine.ts';
 export type RealitySource={label:string;url:string};
-export type RealityNote={id:string;version:1;cardId:string;title:string;body:string;reflection:string;asOf:string;checkedOn:string;limit:string;sources:RealitySource[]};
+export type RealityNote={brief?:string;id:string;version:1;cardId:string;title:string;body:string;reflection:string;asOf:string;checkedOn:string;limit:string;sources:RealitySource[]};
 type Entry={id:string;cards:string[];title:string;body:string;reflections:[string,string];asOf:string;limit:string;sources:RealitySource[]};
 const src=(label:string,url:string):RealitySource=>({label,url});
 const constitution=src('헌법재판소 · 현행 대한민국헌법','https://www.ccourt.go.kr/site/kor/ex/bbs/View.do?bcIdx=985340&cbIdx=1147');
@@ -32,7 +32,7 @@ n('history-fiction','career-star-history','허구와 오류, 정치적 압력을
 n('military-enemy','career-military-enemy','주적이라는 대사와 공식 표현은 다릅니다','국방부는 2026년 6월 18일 브리핑에서 북한 정권과 북한군을 적으로 보는 입장을 밝혔습니다. 헌법 제4조의 평화통일 원칙과 제5조의 국가안전보장·군의 정치적 중립성도 함께 살펴야 합니다.',['위협을 분명히 지목했습니다. 정권·군과 주민을 구분하고 실제 대비책을 설명할 책임도 있습니다.','위협의 구분과 명칭을 되물었습니다. 이 대답만으로 위협을 부정하거나 대화를 우선했다고 판정하지 않으며 구체적 입장을 더 설명해야 합니다.'],[src('국방부 · 2026-06-18 정례브리핑(정책브리핑 수록)','https://www.korea.kr/news/policyNewsView.do?newsId=156767056'),constitution],'2026-06-18 브리핑 · 현행 헌법 · 2026-10-24 확인','발표 당시의 입장입니다. 미발간 백서의 내용을 확정해 쓰지 않으며, 게임의 ‘주적’이라는 표현과 브리핑의 ‘적’이라는 표현을 동일한 인용으로 제시하지 않습니다.'),
 
 n('minimum-wage','wage work-wages','최저임금과 실제 월급','2026년 적용 최저임금은 시간당 10,320원입니다. 월 209시간 기준 환산액은 2,156,880원입니다. 모든 근로자의 실수령 월급을 뜻하지 않습니다.',['임금과 가게 지원을 함께 보았습니다. 지원 종료 뒤의 비용도 계산해야 합니다.','고용 대책을 먼저 요구했습니다. 대책을 기다리는 동안의 생활비도 남습니다.'],[src('고용노동부 · 2026년 적용 최저임금 확정','https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=18144')],'2026년 적용 · 2025년 고시'),
-n('rent-burden','rent home-commute debate-housing','집의 수와 감당할 수 있는 집','2024 주거실태조사의 임차가구 월소득 대비 월임대료 비율은 중위수 15.8%입니다. 소득과 지역에 따라 부담이 달라 공급량과 주거비 부담을 따로 봐야 합니다.',['공공 지원의 접근성을 보았습니다. 입주까지의 대기와 생활권도 필요합니다.','공급과 접근을 넓히려 했습니다. 이용자가 감당할 가격인지 따로 확인해야 합니다.'],[housing],'2024년 조사 · 2025년 발표','확인한 기준연도 자료이며 2026년 실시간 주거비를 뜻하지 않습니다.'),
+n('rent-burden','rent home-commute debate-housing housing-neighborhood housing-exception housing-lease','집의 수와 감당할 수 있는 집','2024 주거실태조사의 임차가구 월소득 대비 월임대료 비율은 중위수 15.8%입니다. 소득과 지역에 따라 부담이 달라 공급량과 주거비 부담을 따로 봐야 합니다.',['공공 지원의 접근성을 보았습니다. 입주까지의 대기와 생활권도 필요합니다.','공급과 접근을 넓히려 했습니다. 이용자가 감당할 가격인지 따로 확인해야 합니다.'],[housing],'2024년 조사 · 2025년 발표','확인한 기준연도 자료이며 2026년 실시간 주거비를 뜻하지 않습니다.'),
 n('integrated-care','care age-family-care debate-society','서비스를 따로 신청하지 않아도 되려면','2026년 3월 27일 통합돌봄 제도가 본격 시행됐습니다. 살던 곳에서 의료·요양·돌봄을 연계하는 제도이며, 연계 창구가 생기는 것과 서비스 인력이 확보되는 것은 다릅니다.',['여러 서비스를 연결하는 방향입니다. 실제 방문할 사람과 지역 공급도 필요합니다.','기존 자원을 활용하려 했습니다. 기관 사이를 주민이 직접 돌지 않도록 연결도 필요합니다.'],[care],'2026년 시행'),
 n('education-cost','school','전체 평균은 줄었지만, 참여 학생 평균은 늘었습니다','2025년 월평균 사교육비는 전체 학생 기준 45만 8천 원, 참여 학생 기준 60만 4천 원입니다. 전년보다 전체 평균은 3.5% 감소했지만 참여 학생 평균은 2.0% 증가했습니다.',['공공 수업과 접근성을 넓히려 했습니다. 시간표와 귀가 교통편도 맞아야 합니다.','비용 때문에 포기하는 아이를 돕는 방향입니다. 지원금을 쓸 수업이 가까이 있는지도 중요합니다.'],[src('국가데이터처 · 2025 초중고사교육비조사, 2026년 발표','https://mods.go.kr/board.es?act=view&bid=245&list_no=443953&mid=a10301070100')],'2025년 조사 · 2026년 발표','전체 학생과 참여 학생 평균의 분모가 다릅니다. 도서관 비용이나 영유아 보육비가 아닙니다.'),
 n('digital-access','age-paper child-apply community-warning','연결할 수 있는 것과 이용할 수 있는 것','2025 디지털정보격차 실태조사는 접근·역량·활용 수준을 구분합니다. 기기가 있고 인터넷에 연결된다는 사실만으로 인증·신청을 혼자 할 수 있다고 판단할 수 없습니다.',['디지털 이용이 어려워도 접근할 길을 남겼습니다. 방문하기 어려운 사람도 살펴야 합니다.','스스로 이용할 기회를 넓혔습니다. 교육을 받기 어려운 사람의 대체 창구도 필요합니다.'],[digital],'2025년 조사 · 2026-03-27 공개'),
@@ -93,12 +93,32 @@ export function chooseReality(s:State,card:Card,index:0|1):RealityNote|undefined
  // 기존 회차의 과거 결과에 소급해 자료를 만들지 않는다. 업그레이드 뒤 새 선택부터 비율을 센다.
  const seen=new Set(s.history.flatMap(h=>h.reality?[h.reality.id]:[]));
  if(!forced.has(card.id)&&!realityDue(s))return;
- const entry=realityEntries.find(e=>e.cards.includes(card.id)&&!seen.has(e.id)&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
+ const ordered=realityEntries.slice().sort((a,b)=>Number(b.id.startsWith('housing-'))-Number(a.id.startsWith('housing-')));const entry=ordered.find(e=>e.cards.includes(card.id)&&!seen.has(e.id)&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
  if(!entry)return;
- return {id:entry.id,version:1,cardId:card.id,title:entry.title,body:entry.body,reflection:entry.reflections[index],asOf:entry.asOf,checkedOn:'2026-10-24',limit:entry.limit,sources:entry.sources.map(x=>({...x}))};
+ const note:RealityNote={id:entry.id,version:1,cardId:card.id,title:entry.title,body:entry.body,reflection:entry.reflections[index],asOf:entry.asOf,checkedOn:entry.id.startsWith('housing-')?'2026-10-25':'2026-10-24',limit:entry.limit,sources:entry.sources.map(x=>({...x}))};note.brief=briefFor(note);return note;
 }
 export function validReality(value:unknown):value is RealityNote{
  const x=value as RealityNote;const text=(s:unknown)=>typeof s==='string'&&s.length>0&&s.length<=2400;
- if(!x||x.version!==1||!['id','cardId','title','body','reflection','asOf','checkedOn'].every(k=>text(x[k as keyof RealityNote]))||typeof x.limit!=='string'||x.limit.length>2400||!Array.isArray(x.sources)||!x.sources.length||x.sources.length>4)return false;
+ if(!x||(x.brief!==undefined&&(!text(x.brief)||x.brief.length>600))||x.version!==1||!['id','cardId','title','body','reflection','asOf','checkedOn'].every(k=>text(x[k as keyof RealityNote]))||typeof x.limit!=='string'||x.limit.length>2400||!Array.isArray(x.sources)||!x.sources.length||x.sources.length>4)return false;
  return x.sources.every(s=>{if(!s||!text(s.label)||!text(s.url))return false;try{const u=new URL(s.url);return u.protocol==='https:'&&!u.username&&!u.password&&(u.hostname.endsWith('.go.kr')||u.hostname.endsWith('.or.kr')||u.hostname==='www.korea.kr'||u.hostname==='eiec.kdi.re.kr'||u.hostname==='rm.coe.int'||u.hostname==='www.coe.int')}catch{return false}});
 }
+
+/** 기본 화면은 사실 1~2문장만. 법 조항 번호를 통계 숫자처럼 강조하지 않는다. */
+export function compactReality(note:RealityNote){return note.brief??note.body.split(/(?<=[.!?])\s+/).slice(0,2).join(' ');}
+function briefFor(note:RealityNote){const short:Record<string,string>={
+ 'rent-burden':'2024년 임차가구의 월소득 대비 월임대료 비율은 중위수 15.8%입니다. 전국 기준이며 지역·소득별 차이가 있습니다.',
+ 'education-cost':'2025년 학생 1인당 월평균 사교육비는 전체 학생 45만 8천 원, 참여 학생 60만 4천 원입니다.',
+ 'leave-2026':'2026년 상반기 육아휴직급여 수급자 중 남성은 38.8%(40,320명)였습니다. 모든 아버지의 사용률은 아닙니다.',
+ 'heat-2026':'2026년 여름 응급실 표본감시에 온열질환자 4,066명, 추정 사망자 36명이 신고됐습니다. 전수조사가 아닌 잠정 집계입니다.',
+ 'ai-junior':'한국은행 연구에서 최근 4년간 감소한 청년 일자리 28.5만 개 중 약 94%가 AI 고노출 업종에 집중됐습니다. 모두 AI 때문이라는 뜻은 아닙니다.',
+ 'ai-business':'2,297개 사업체 조사에서 AI 도입률은 28.6%였습니다. 도입 사업체의 75.6%가 생성형 AI를 활용했습니다.',
+ 'ai-region':'2025년 에이전틱 AI 고노출 직군의 취업자 증가 10.5만 명 중 수도권 비중은 88.3%였습니다. AI의 직접 창출 효과로 입증된 수치는 아닙니다.',
+ 'ai-time':'AI 활용자의 평균 업무시간 절감률은 3.8%였습니다. 주 40시간으로 환산하면 약 1.5시간이며 모든 사업장에 같은 효과를 보장하지 않습니다.',
+ 'migrant-housing':'근로기준법은 부속 기숙사의 사생활 보호와 안전·위생 등에 관한 기준을 두고 있습니다.'
+ };if(short[note.id])return short[note.id];return note.body.split(/(?<=[.!?])\s+/).slice(0,2).join(' ');}
+const housingNew=[
+ n('housing-debt','housing-credit','가계신용 잔액','2026년 2분기 말 가계신용 잔액은 2,019.8조 원으로 전분기 말보다 25.9조 원 늘었습니다. 주택담보대출만이 아니라 가계대출과 판매신용을 합친 잠정치입니다.',['주택 구입 기회를 앞세웠습니다.','상환 위험을 앞세웠습니다.'],[src('한국은행 · 2026년 2분기 가계신용(KDI 수록)','https://eiec.kdi.re.kr/policy/materialView.do?num=285513')],'2026년 2분기 말 · 2026-08 공개','전체 가계신용입니다. 이 수치만으로 규제 완화의 집값 상승 효과나 개인의 상환 능력을 판정하지 않습니다.'),
+ n('housing-public-return','housing-rebuild','개발 이익과 주거','헌법 제23조는 재산권을 보장하면서 공공복리에 적합하게 행사하도록 규정합니다. 제35조는 쾌적한 주거생활을 위한 국가의 노력을 규정합니다.',['사업성을 앞세웠습니다.','공공기여를 앞세웠습니다.'],[constitution],'현행 헌법 제23·35조','개별 사업의 적정 환수율을 정한 자료는 아닙니다.')
+];realityEntries.push(...housingNew);
+
+realityEntries.push(n('housing-owners','housing-tax','주택 보유 건수','2024년 주택 소유자 중 2건 이상 보유한 사람은 237.7만 명으로 14.9%였습니다. 전체 국민이나 전체 가구의 비율이 아닙니다.',['보유 건수를 앞세웠습니다.','가액과 취득 사유를 앞세웠습니다.'],[src('국가데이터처 · 2024 주택소유통계','https://mods.go.kr/board.es?act=view&bid=11471&list_no=439298&mid=a10301100400')],'2024년 기준 · 2025-11 발표','개인 소유자 기준입니다. 보유 건수만으로 주택 가격·투기 여부·적정 세금을 판정하지 않습니다.'));

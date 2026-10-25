@@ -1,8 +1,9 @@
+import {candidateFor} from './candidates.ts';
 import type {Card} from './content.ts';
 import type {State,Statement} from './engine.ts';
 import {parties,partyById} from './parties.ts';
 import {debateIds} from './patch-content.ts';
-export function confirmOpponent(s:State){if(!s.campaign)return;const candidates=parties.filter(p=>p.id!==s.partyId);const p=candidates[(s.initialSeed+s.elections.length)%candidates.length];const third=parties.find(x=>x.id!==s.partyId&&x.id!==p.id)!;s.campaign.nominee={partyId:p.id,name:p.leader,playerPartyId:s.partyId,thirdPartyId:third.id};}
+export function confirmOpponent(s:State){if(!s.campaign)return;const candidates=parties.filter(p=>p.id!==s.partyId);const p=candidates[(s.initialSeed+s.elections.length)%candidates.length];const third=parties.find(x=>x.id!==s.partyId&&x.id!==p.id)!;s.campaign.nominee={partyId:p.id,name:candidateFor(p.id).name,playerPartyId:s.partyId,thirdPartyId:third.id};}
 export function statementFor(card:Card,s:State){const topic=card.id==='names-return'?'명단 공개':card.id==='press-return'?'언론 자유':card.topic;return s.statements.find(x=>x.topic===topic);}
 export function reviewCard(card:Card,s:State){const prior=statementFor(card,s);
  if(card.id==='audit'&&prior){card.choices[0].result='본인에게도 독립 조사를 적용했습니다. 일정과 자금은 줄었지만 원칙을 믿었던 사람들은 기록을 확인했습니다.';card.choices[1].result=prior.strength===3?'과거에는 거부 자체를 범인이라고 했습니다. 이번에는 절차부터 물었습니다. 지지자들도 기준이 달라진 이유를 요구했습니다.':'예전에도 독립성을 요구했습니다. 같은 기준으로 자료를 제출하고 수사 협조 여부까지 설명해야 합니다.';}
