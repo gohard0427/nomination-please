@@ -23,7 +23,7 @@ export function worldContext(card:Card,s:State):Card{
  if(!s.partyId&&card.id==='local-rice'){card.title='식당 자리는 확보했습니다';card.body='지역 연합의 실무자가 저녁 식사를 제안했습니다. “자리는 확보했다”는 말은 공동 후보가 아니라 식당 자리입니다.';card.choices[0].text='식사는 하되 공동 후보 협약부터 확인한다';card.choices[1].text='주민 약속을 지키고 협약을 서면으로 묻는다';}
  if(!s.partyId&&card.id==='coalition')return coalitionOpening(card,s);
  if(card.id==='tv'&&!s.partyId&&s.flags.some(f=>f.startsWith('연대 협상:'))&&!s.flags.includes('연대 결과 확인'))return coalitionDecision(card,s);
- if(card.id==='party-offer'&&s.flags.includes('기초의원 당적 선택')&&s.partyId){card.title='복귀 활동 지원금, 조건도 있습니다';card.body=`${s.party}이 복귀 활동비를 지원하겠다고 합니다. 지역 간담회와 사용 내역 공개가 조건입니다. 시작 당적 선택만으로 지급된 돈은 아닙니다.`;card.choices=[{text:'사용 내역을 공개하고 지역 활동 지원을 받는다',effect:{org:3},result:'지원금을 받았습니다. 환영 인사보다 먼저 영수증 양식이 왔습니다.'},{text:'당의 지원 대신 독자 후원을 모은다',effect:{funds:8,party:-2},result:'합법적인 소액 후원을 모았습니다. 당 로고는 남아 있고 계산서는 직접 냅니다.'}];}
+ if(card.id==='party-offer'&&s.flags.includes('기초의원 당적 선택')&&s.partyId){card.speaker='당대표 · '+partyById(s.partyId)!.leader;card.title='지역활동 지원금, 조건도 있습니다';card.body=`${s.party}이 지역활동비를 지원하겠다고 합니다. 지역 간담회와 사용 내역 공개가 조건입니다. 시작 당적 선택만으로 지급된 돈은 아닙니다.`;card.choices=[{text:'사용 내역을 공개하고 지역 활동 지원을 받는다',effect:{org:3},result:'지원금을 받았습니다. 환영 인사보다 먼저 영수증 양식이 왔습니다.'},{text:'당의 지원 대신 독자 후원을 모은다',effect:{funds:8,party:-2},result:'합법적인 소액 후원을 모았습니다. 당 로고는 남아 있고 계산서는 직접 냅니다.'}];}
  return card;
 }
 function coalitionParty(s:State){const existing=s.flags.find(f=>f.startsWith('연대 협상:'))?.split(':')[1];return existing??s.campaign?.nominee?.thirdPartyId??parties[(s.initialSeed+3)%parties.length].id;}
@@ -55,6 +55,8 @@ function updateNickname(s:State,card:Card,index:0|1,out:Outcome){let next:string
  const disclosed=s.statements.filter(x=>x.strength===3&&['언론 자유','명단 공개','지역 주택 공급','대통령 검증'].includes(x.topic));if(disclosed.length>=3&&index===0&&['press-return','names-return','housing-exception'].includes(card.id))next='공개광';
  if(card.id==='leader-favor'&&index===0&&s.flags.includes('분기:leader:0'))next='충성맨';
  if(card.id==='coalition'&&index===0&&s.history.some(h=>h.title.includes('단일화')))next='단일화꾼';
+ if(card.id.startsWith('pledge-price-')&&index===0&&s.flags.filter(f=>/^분기:pledge-price-\d:0$/.test(f)).length>=3)next='공약공장';
+ if(card.id.startsWith('explain-silence-')&&index===1&&s.flags.filter(f=>/^분기:explain-silence-\d:1$/.test(f)).length>=3)next='해명잠수';
  if(!next||nickname(s)===next)return;s.flags.push(`별명:${next}:${card.id}:${s.turn}`);out.news.unshift(`정치권의 새 별명 · ${next}. 이번 선택과 실제 이력에서 붙었습니다.`);
 }
 export function recordExposedNickname(s:State){if(nickname(s)!=='검은돈')s.flags.push(`별명:검은돈:funds-exposure:${s.turn}`);}

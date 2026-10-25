@@ -1,9 +1,10 @@
 import {v,type VarietyCard} from './event-factory.ts';
+export const FINAL_FLAG='최종 대결: v0.9';
 export const PATCH_FLAG='질문 개편: v0.6';
 export const parliamentIds=['foreign-entry','foreign-japan','foreign-opcon','north-missile','north-aid','north-nuclear','north-border','democracy-names'];
 export const debateIds=['debate-economy','debate-housing','debate-society','debate-politics','debate-security'];
 export const debateSequence=debateIds.flatMap(id=>[id,id+'-reply']);
-export function expandedRoute(route:string[]){const out=route.flatMap(id=>id==='president'?[...parliamentIds.flatMap((x,i)=>i?["?central",x]:[x]),id]:id==='tv'?[id,...debateSequence]:[id]);return out;}
+export function expandedRoute(route:string[],final=false){const out=route.flatMap(id=>id==='president'?[...parliamentIds.flatMap((x,i)=>i?["?central",x]:[x]),id]:id==='tv'?[id,...debateSequence]:[id]);if(final){const at=out.indexOf('tv');const end=out.indexOf('debate-security-reply');if(at>=0&&end>=0&&out[end+1]==='turnout'){out.splice(end+1,1);out.splice(at,0,'turnout');}}return out;}
 const p=(id:string,title:string,body:string,a:string,b:string,topic:any,risks:[string,string],values?:[Record<string,number>,Record<string,number>]):VarietyCard=>({...v(id,'presidential',title,'기자 · 문장수',body,[a,{trust:3,funds:-2},'입장을 밝혔습니다. 지지 선언 뒤에는 실행 계획을 요구하는 질문이 따라왔습니다.',risks[0]],[b,{trust:3,funds:-2},'다른 길을 택했습니다. 반대편뿐 아니라 지지자에게도 성과를 보여줘야 합니다.',risks[1]],topic,{kind:'conflict',signals:[[{topic,stance:.8}],[{topic,stance:-.8}]]}),...values?{values}:{}});
 export const patchCards:VarietyCard[]=[
 p('foreign-entry','무비자 입국부터 손봐야 합니까?','중국 국적 입국자가 피의자인 강력범죄 사건이 보도됐습니다. 혐의는 수사 중이며, 한 사건으로 국적 집단 전체의 범죄 성향을 판단할 수 없습니다. 무비자 적용 범위와 체류 심사를 둘러싼 논쟁에서 국회의원인 당신은 어떤 제도 개선을 요구할까요?','무비자 입국부터 철저히 손봐야 합니다.','범죄를 잡아야지, 국적을 잡아서는 안 됩니다.','migration',['입국 심사 강화 요구 · 관광·상권 부담과 예방 효과 검증','개인별 위험·범죄 증거 중심 · 즉각 대응 요구와 충돌']),

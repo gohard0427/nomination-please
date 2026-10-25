@@ -72,3 +72,6 @@ choice-revision.ts는63개 대사·결과와 정책 대비, patch-content.ts는 
 
 ## v0.8 정치 사건
 politics.ts는 시작 당적·본선 패배 횟수·현직 대통령 임기·단일화 선출·부메랑·별명을 처리한다. world-content.ts의12주제는 일반 카드 슬롯에 챕터별1개씩 예약한다. candidates.ts의 ID·정당·의제·SVG를 후보 계산/표시가 공유한다. 선거 계산은 두 상대의 실제 정당 기반을 받는다. 외부 저장v3는 선택 당시 자료 brief와 결과 relationships를 선택적으로 검증한다.
+
+## v0.9 최종 대결·후일담
+final-duel.ts는 실제 과거/직전 답을 참조하는 공방과 자금 보호 경계를 담당합니다. route.ts는 신규 토론 순서와18선택 대선 재도전, 기존 진행의 미래 슬롯만 보정합니다. epilogues.ts는43개 후일담과 시드 선정·법적 조건·epilogue.version1 검증을, epilogue-art.ts는 직업별 전용 원화의 장면 좌표를 관리합니다. 저장v3에 선택적 하위 스키마를 추가하며 원본 백업과 기존 이력 보존을 유지합니다.
