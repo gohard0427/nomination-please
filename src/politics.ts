@@ -1,13 +1,15 @@
+import {syncAide} from './aides.ts';
+import {shortRun} from './short-run.ts';
 import type {State,Outcome} from './engine.ts';
 import type {Card} from './content.ts';
-import {parties,partyById} from './parties.ts';
+import {parties,partyById,currentPartyName} from './parties.ts';
 import {candidateFor,candidateLabel} from './candidates.ts';
 import {WORLD_FLAG,worldTheme} from './world-content.ts';
 import {queuePartyEntry} from './party-entry.ts';
 import {clamp} from './support.ts';
 import {associations} from './constituencies.ts';
 export const isOffer=(id:string)=>['party-offer','party-switch'].includes(id)||id.startsWith('reoffer-');
-export function startAffiliation(s:State,id:string|null){if(s.job!==1||s.turn!==0||s.flags.includes('기초의원 당적 선택'))return s;if(id!==null&&!partyById(id))return s;const next=structuredClone(s);next.partyId=id;next.party=partyById(id)?.name??'무소속';next.partyHistory=[next.party];next.stats.party=id?25:0;next.stats.funds=40;next.flags.push('기초의원 당적 선택');if(id==='reform')queuePartyEntry(next);return next;}
+export function startAffiliation(s:State,id:string|null){if(s.job!==1||s.turn!==0||s.flags.includes('기초의원 당적 선택'))return s;if(id!==null&&!partyById(id))return s;const next=structuredClone(s);next.partyId=id;next.party=partyById(id)?.name??'무소속';next.partyHistory=[next.party];next.stats.party=id?25:0;next.stats.funds=40;next.flags.push('기초의원 당적 선택');if(id==='reform')queuePartyEntry(next);syncAide(next);return next;}
 export function lossCount(s:State){const name=s.elections.at(-1)?.name;return s.elections.filter(e=>e.name===name&&!e.won).length;}
 export function electionLimit(s:State){return s.stage==='count'&&!s.elections.at(-1)?.won&&lossCount(s)>=2;}
 export function incumbent(s:State){const serial=Math.max(0,Math.floor((s.year-2026)/5));const names=['한민국','조유신','이서진','백정원','송지헌','오하람','권세영','임도윤'];return {id:'president-'+serial,name:names[serial%names.length]+(serial>=names.length?' '+(Math.floor(serial/names.length)+1)+'세':'') ,partyId:(s.initialSeed+serial)%2?'future':'better',termStart:2026+serial*5};}
@@ -43,10 +45,10 @@ export function recordPolitics(s:State,card:Card,index:0|1,out:Outcome){const th
  updateNickname(s,card,index,out);out.news=out.news.slice(0,8);
 }
 export function relationInterest(s:State,partyId:string){return s.flags.filter(f=>f.startsWith('정당 접점:'+partyId+':')).reduce((sum,f)=>sum+Number(f.split(':')[2]),0);}
-export function nickname(s:State){const flag=s.flags.filter(f=>f.startsWith('별명:')).at(-1);return flag?.split(':')[1]??null;}
+export function nickname(s:State){const flag=s.flags.filter(f=>f.startsWith('별명:')).at(-1);if(s.flags.some(f=>f.startsWith('별명:검은돈:')))return '검은돈';return flag?.split(':')[1]??null;}
 export function nicknameRecords(s:State){return s.flags.filter(f=>f.startsWith('별명:')).map(f=>{const [,name,event,turn]=f.split(':');return {name,event,turn:Number(turn)};});}
 function updateNickname(s:State,card:Card,index:0|1,out:Outcome){let next:string|null=null;
- if(s.flags.filter(f=>f==='정당 이동').length>=2||s.partyHistory.filter((p,i,a)=>i>0&&p!==a[i-1]&&p!=='무소속').length>=3)next='철새';
+ const affiliations=s.partyHistory.map(currentPartyName).filter(p=>p!=='무소속').filter((p,i,a)=>i===0||p!==a[i-1]);const moves=Math.max(0,affiliations.length-1);const bird=moves>=2;const newlyBird=bird&&!s.flags.some(f=>f.startsWith('별명:철새:'));if(card.id==='leader')s.flags.push('대표 약속 당적:'+(s.partyId??'independent'));if(newlyBird)next='철새';
  if(card.id==='favor-request'&&index===0||card.id==='housing-exception'&&index===0)next='원칙독종';
  if(card.id==='housing-exception'&&index===1)next='내편무죄';
  if(card.id==='favor-request'&&index===1&&s.flags.some(f=>f==='분기:recruit:1'))next='충성맨';
@@ -57,6 +59,6 @@ function updateNickname(s:State,card:Card,index:0|1,out:Outcome){let next:string
  if(card.id==='coalition'&&index===0&&s.history.some(h=>h.title.includes('단일화')))next='단일화꾼';
  if(card.id.startsWith('pledge-price-')&&index===0&&s.flags.filter(f=>/^분기:pledge-price-\d:0$/.test(f)).length>=3)next='공약공장';
  if(card.id.startsWith('explain-silence-')&&index===1&&s.flags.filter(f=>/^분기:explain-silence-\d:1$/.test(f)).length>=3)next='해명잠수';
- if(!next||nickname(s)===next)return;s.flags.push(`별명:${next}:${card.id}:${s.turn}`);out.news.unshift(`정치권의 새 별명 · ${next}. 이번 선택과 실제 이력에서 붙었습니다.`);
+ if(bird&&next==='충성맨')next=newlyBird?'철새':null;if(next==='충성맨'&&!s.flags.includes('대표 약속 당적:'+(s.partyId??'independent')))next=null;if(newlyBird)next='철새';if(!next||nickname(s)===next)return;s.flags.push(`별명:${next}:${card.id}:${s.turn}`);out.news.unshift(`정치권의 새 별명 · ${next}. 이번 선택과 실제 이력에서 붙었습니다.`);
 }
 export function recordExposedNickname(s:State){if(nickname(s)!=='검은돈')s.flags.push(`별명:검은돈:funds-exposure:${s.turn}`);}

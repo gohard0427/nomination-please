@@ -1,0 +1,16 @@
+/** 문항별 편집 연결. 주제만 같다는 이유로 자료를 자동 부착하지 않는다. 기존 검증 출처를 재사용한다. */
+export const realityLinks:Record<string,string>={
+ 'fresh-prePolitics-5':'community-cats','fresh-prePolitics-6':'donation','fresh-prePolitics-18':'age-bus','fresh-prePolitics-26':'donation','fresh-prePolitics-30':'age-crossing','fresh-prePolitics-33':'elite-consent','fresh-prePolitics-35':'campaign','fresh-prePolitics-40':'equal','fresh-prePolitics-44':'age-rural','fresh-prePolitics-45':'return','fresh-prePolitics-46':'public-journal','fresh-prePolitics-47':'campaign','fresh-prePolitics-48':'community-school',
+ 'fresh-local-0':'redtape','fresh-local-1':'central-aide','fresh-local-2':'rent','fresh-local-13':'age-crossing','fresh-local-21':'party-labor','fresh-local-22':'return','fresh-local-27':'age-clinic',
+ 'fresh-central-0':'elite-consent','fresh-central-4':'community-grid','fresh-central-5':'freepress','fresh-central-12':'age-emergency','fresh-central-18':'elite-experts','fresh-central-19':'freepress','fresh-central-26':'equal',
+ 'fresh-presidential-1':'public-family-privacy','fresh-presidential-6':'forest','fresh-presidential-8':'age-pension','fresh-presidential-10':'housing-credit','fresh-presidential-15':'religion-rally','fresh-presidential-17':'freepress','fresh-presidential-19':'community-grid','fresh-presidential-26':'fatigue','fresh-presidential-27':'public-family-privacy',
+ 'fresh-job-0-0':'job-activist','fresh-job-1-1':'return','fresh-job-1-5':'fatigue','fresh-job-4-2':'freepress','fresh-job-4-4':'freepress','fresh-job-4-5':'investigation','fresh-job-4-6':'party-labor','fresh-job-5-0':'press','fresh-job-5-6':'recruit','fresh-job-6-2':'freepress','fresh-job-7-3':'donation',
+ 'fresh-party-future-0':'inheritance','fresh-party-better-1':'investigation','fresh-party-better-2':'democracy','fresh-party-reform-0':'elite-experts','fresh-party-reform-2':'ai-regional-jobs','fresh-party-reform-3':'equal','fresh-party-labor-0':'party-labor','fresh-party-labor-3':'party-labor','fresh-party-green-1':'energy','fresh-party-green-3':'forest','fresh-party-guardian-0':'religion-rally',
+ 'world-emergency-local':'age-clinic','world-medicine-central':'age-clinic','world-leak-presidential':'age-emergency','world-strike-presidential':'party-labor',
+ 'fresh-prePolitics-9':'age-paper','fresh-prePolitics-13':'child-nursery','fresh-prePolitics-15':'age-emergency','fresh-prePolitics-17':'age-meal','fresh-prePolitics-21':'age-jobs','fresh-prePolitics-28':'age-emergency','fresh-prePolitics-31':'age-heat','fresh-prePolitics-42':'child-leave','fresh-prePolitics-50':'age-digital','fresh-prePolitics-53':'age-lift','fresh-prePolitics-57':'age-heat',
+ 'fresh-local-4':'home-rebuild','fresh-local-17':'age-careworkers','fresh-local-24':'age-heat','fresh-local-25':'safety',
+ 'fresh-central-1':'age-retirement','fresh-central-2':'age-pension','fresh-central-7':'age-finance','fresh-central-8':'age-retirement','fresh-central-16':'work-migrant','fresh-central-24':'safety',
+ 'fresh-presidential-0':'policy','fresh-presidential-4':'ai-junior-ladder','fresh-presidential-7':'age-careworkers','fresh-presidential-11':'majority-limits',
+ 'fresh-job-0-4':'age-emergency','fresh-job-5-3':'public-journal','fresh-job-6-4':'career-star-history','fresh-party-better-0':'policy',
+ 'world-heat-prePolitics':'age-heat'
+};

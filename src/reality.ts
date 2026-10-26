@@ -1,3 +1,4 @@
+import {realityLinks} from './reality-links.ts';
 import type {Card} from './content.ts';
 import type {State} from './engine.ts';
 export type RealitySource={label:string;url:string};
@@ -93,9 +94,9 @@ export function chooseReality(s:State,card:Card,index:0|1):RealityNote|undefined
  // 기존 회차의 과거 결과에 소급해 자료를 만들지 않는다. 업그레이드 뒤 새 선택부터 비율을 센다.
  const seen=new Set(s.history.flatMap(h=>h.reality?[h.reality.id]:[]));
  if(!forced.has(card.id)&&!realityDue(s))return;
- const ordered=realityEntries.slice().sort((a,b)=>Number(b.id.startsWith('housing-'))-Number(a.id.startsWith('housing-')));const entry=ordered.find(e=>e.cards.includes(card.id)&&!seen.has(e.id)&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
+ const ordered=realityEntries.slice().sort((a,b)=>Number(b.id.startsWith('housing-'))-Number(a.id.startsWith('housing-')));const entry=ordered.find(e=>e.cards.includes(realityLinks[card.id]??card.id)&&!seen.has(e.id)&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
  if(!entry)return;
- const note:RealityNote={id:entry.id,version:1,cardId:card.id,title:entry.title,body:entry.body,reflection:entry.reflections[index],asOf:entry.asOf,checkedOn:entry.id.startsWith('housing-')?'2026-10-25':'2026-10-24',limit:entry.limit,sources:entry.sources.map(x=>({...x}))};note.brief=briefFor(note);return note;
+ const note:RealityNote={id:entry.id,version:1,cardId:card.id,title:entry.title,body:entry.body,reflection:realityLinks[card.id]?'선택과 관련된 현실의 조건입니다. 특정 정책의 효과를 보장하지 않습니다.':entry.reflections[index],asOf:entry.asOf,checkedOn:entry.id.startsWith('housing-')?'2026-10-25':'2026-10-24',limit:entry.limit,sources:entry.sources.map(x=>({...x}))};note.brief=briefFor(note);return note;
 }
 export function validReality(value:unknown):value is RealityNote{
  const x=value as RealityNote;const text=(s:unknown)=>typeof s==='string'&&s.length>0&&s.length<=2400;

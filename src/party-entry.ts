@@ -1,9 +1,11 @@
+import {shortRun} from './short-run.ts';
 import type {State} from './engine.ts';
 import {chapterFor} from './chapters.ts';
 import type {Chapter} from './event-factory.ts';
 export const ENTRY_FLAG='입당 질문:v1:';
 export function partyEntries(s:Pick<State,'flags'>){return s.flags.filter(f=>f.startsWith(ENTRY_FLAG)).map(f=>{const [at,phase]=f.slice(ENTRY_FLAG.length).split(':');return {at:Number(at),phase:phase as Chapter,id:'reform-tech-'+phase};});}
 export function queuePartyEntry(s:State){if(s.flags.includes('새판개혁당 입당 질문 예약')||s.flags.includes('새판개혁당 입당 질문 완료'))return;
+ if(shortRun(s)){const position=s.route.findIndex((id,i)=>i>s.cursor&&!!id&&!['tv','last'].includes(id)&&!id.startsWith('debate-')&&(id.startsWith('fresh-')||id.startsWith('origin-')||id.startsWith('public-')||id.startsWith('age-')||id.startsWith('work-')));if(position>=0){s.route[position]='reform-tech-'+chapterFor(s.route[position]);s.flags.push('새판개혁당 입당 질문 예약');}return;}
  const at=s.cursor+1;const block=s.flags.filter(f=>f.startsWith('재도전:')).some(f=>{const start=Number(f.split(':')[2]);return at>=start&&at<start+(s.flags.includes('토론 재도전:'+start)?18:8);});
  // 재도전8선택의 구조는 보존하고, 다음 기본 경로 구간의 앞에 삽입한다.
  let position=at;if(block){const starts=s.flags.filter(f=>f.startsWith('재도전:')).map(f=>Number(f.split(':')[2]));const start=starts.find(start=>at>=start&&at<start+(s.flags.includes('토론 재도전:'+start)?18:8))!;position=start+(s.flags.includes('토론 재도전:'+start)?18:8);}

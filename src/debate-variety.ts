@@ -1,0 +1,17 @@
+import type {State} from './engine.ts';
+import type {Card} from './content.ts';
+import {shortRun} from './short-run.ts';
+type Q=[string,string,string,string,string];
+const variants:Record<string,Q[]>={
+ economy:[['경기 침체 때의 돈','경기가 나빠졌는데 공약 재원이 부족합니다. 지원을 늘리려면 빚이나 세금 부담이 생깁니다.','지금은 생계 지원이 우선입니다. 부담도 공개하겠습니다.','재정 여력을 지키겠습니다. 지원 대상을 좁히겠습니다.','지원 범위와 비용을 다시 묻게 됐습니다.'],['AI와 첫 일자리','AI 도입으로 신입 채용이 줄어드는 기업에 지원금을 줄 겁니까?','새 채용과 재교육을 지원 조건으로 걸겠습니다.','도입을 막지 않고 노동자의 다음 일자리를 지원하겠습니다.','지원 조건 밖 노동자에게도 설명할 차례입니다.'],['세금의 약속','혜택은 모두에게 약속했는데 돈을 더 낼 사람은 아무도 말하지 않았습니다. 누구에게 부담을 요구합니까?','혜택과 부담 대상을 함께 밝히겠습니다.','세금보다 공약 규모부터 줄이겠습니다.','빠진 혜택과 늘어난 부담이 검증 대상입니다.']],
+ housing:[['공급의 뒷마당','다른 지역에 집을 지으라던 지지자가 자기 동네 개발은 반대합니다.','우리 동네도 공급 부담을 나눠야 합니다.','기반 시설을 갖추기 전에는 착공을 서두르지 않겠습니다.','주민의 부담과 대기자의 시간을 함께 확인받습니다.'],['집값과 빚','대출을 풀면 집을 살 기회가 늘지만 빚과 가격도 오를 수 있습니다. 어느 위험을 먼저 감수합니까?','갚을 능력이 있는 실수요자의 대출은 열겠습니다.','더 빌려주기보다 임대와 공급을 늘리겠습니다.','구매 희망자와 빚을 걱정하는 사람의 반응이 갈렸습니다.'],['세입자의 이삿날','재개발을 서두르면 공급은 늘지만 살던 세입자는 먼저 이사해야 합니다.','이주 대책이 없으면 사업도 늦추겠습니다.','공급과 임시 주거를 함께 추진하겠습니다.','사업 속도보다 실제 이주 계획이 검증받게 됐습니다.']],
+ society:[['돌봄의 빈자리','돌봄을 가족에게 맡기면 누군가 일을 그만둬야 합니다. 누구의 시간을 바꾸겠습니까?','사회가 돌봄 인력을 더 고용해야 합니다.','가족이 쉴 수 있게 노동시간과 휴직을 바꾸겠습니다.','돈과 시간의 청구서를 함께 받았습니다.'],['노후의 소득','연금이 부족한 고령자에게 더 일하라고 해야 합니까?','일하지 못해도 최소 소득은 보장하겠습니다.','원하는 사람이 더 일할 조건부터 만들겠습니다.','일할 수 없는 사람의 대책도 물었습니다.'],['지역 의료','큰 병원을 지어도 의사가 오지 않는 지역은 어떻게 합니까?','지역 근무 인력의 처우에 더 투자하겠습니다.','거점 병원과 이동·방문 진료를 먼저 묶겠습니다.','건물 대신 실제 진료까지 걸리는 시간을 확인받습니다.']],
+ politics:[['다수의 한계','선거에서 이겼으니 반대 의견은 접으라는 지지자가 있습니다. 어디까지 따르겠습니까?','이겼어도 소수의 질문과 견제는 지키겠습니다.','공약은 추진하되 심사 과정과 근거를 공개하겠습니다.','승리한 표와 지켜야 할 절차를 구분했습니다.'],['같은 검증','상대에게 공개하라던 자료를 우리 캠프도 내야 합니까?','우리 캠프도 같은 기준으로 내겠습니다.','검증은 받되 사적 정보의 공개 범위는 심사받겠습니다.','과거 발언의 실제 적용 여부가 기록에 남습니다.'],['은인의 자리','오랫동안 도운 사람이 캠프의 자리를 요구합니다. 다른 지원자는 아직 심사 전입니다.','은혜와 채용 심사는 분리하겠습니다.','경험은 인정하되 공개 심사는 받게 하겠습니다.','은인도 절차의 예외인지 질문받았습니다.']],
+ security:[['강경 대응의 비용','강하게 대응하면 상대도 보복할 수 있습니다. 경제 피해까지 감수할 겁니까?','강경 대응과 피해 지원을 함께 준비하겠습니다.','대비는 유지하되 협상으로 피해를 줄이겠습니다.','안보 발언 뒤에 경제 대책도 요구받았습니다.'],['동맹의 청구서','동맹이 더 많은 방위비를 요구합니다. 다른 예산을 줄여서라도 내겠습니까?','필요한 분담은 하되 근거와 상한을 따지겠습니다.','독자 역량을 우선하고 협상을 이어가겠습니다.','어느 예산을 지킬지도 설명하게 됐습니다.'],['북한의 위협','도발 뒤 대화 재개 요구와 지원 중단 요구가 갈립니다. 무엇을 먼저 하겠습니까?','억지력을 높이고 도발의 대가를 분명히 하겠습니다.','대비 태세를 지키며 위기 소통 창구를 열겠습니다.','주민 보호와 다음 도발 억제책도 검증받습니다.']]
+};
+export function variedDebate(card:Card,s:State){if(!shortRun(s)||!card.id.startsWith('debate-')||card.id.endsWith('-reply'))return card;if(card.id==='debate-politics'&&s.statements.some(x=>x.topic==='대통령 검증'&&x.strength===3))return card;
+ const topic=card.id.slice(7);const list=variants[topic];if(!list)return card;
+ const related=s.signals.filter(x=>({economy:['economy','labor','tax'],housing:['housing'],society:['welfare','society'],politics:['reform'],security:['diplomacy','migration']} as Record<string,string[]>)[topic].includes(x.topic)&&!x.cardId.startsWith('debate-')).at(-1);
+ const prior=related?s.history.find(h=>s.route[h.turn]===related.cardId):undefined;const retry=s.flags.filter(f=>f.startsWith('토론 재도전:')).length;
+ const variant=(s.initialSeed+topic.length+retry+(related?Math.round((related.stance+1)*3):0))%list.length;const [title,ask,a,b,result]=list[variant];card.title=(retry?'재도전 · ':'')+title+' · 최종 토론';card.body=(prior?`경쟁 후보가 당신의 실제 답변 “${prior.choice}”을 띄웁니다. `:'경쟁 후보가 묻습니다. ')+ask;card.choices=[{text:a,effect:{trust:6,party:-3,org:1},result},{text:b,effect:{trust:2,org:5,party:1},result:result+' 실행 순서도 공개하겠다고 답했습니다.'}];return card;
+}

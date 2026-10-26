@@ -1,5 +1,5 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
-import {createState,getCard,applyChoice,acknowledge,resume,retryElection,currentOffer,catalog,type State} from '../src/engine.ts';
+import {createExpandedState as createState,getCard,applyChoice,acknowledge,resume,retryElection,currentOffer,catalog,type State} from '../src/engine.ts';
 import {startAffiliation,electionLimit,incumbent,worldContext,recordPolitics,coalitionWins,nickname} from '../src/politics.ts';
 import {WORLD_FLAG,worldTheme} from '../src/world-content.ts';
 import {parties,currentPartyName} from '../src/parties.ts';import {decode,loadState} from '../src/persistence.ts';

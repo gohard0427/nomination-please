@@ -1,3 +1,14 @@
+# v0.10 추가 구조
+
+- short-run.ts: 신규48선택 일정·6/9선택 재기·노출 스냅샷·제한적 능력치 보정. 기존 일정은 그대로 보존.
+- fresh-content.ts/fresh-professions.ts/world-expansion.ts:253개 추가 카드. chapterFor와varietyPool에서 동일 데이터 참조.
+- concise-results.ts: 결과 뉴스2개와 선택적 용어 풀이. debate-variety.ts:5응답 토론의 실제 과거 기록 기반 질문 변형.
+- aides.ts:6정당 보좌진의 신원·목표·관계·기억. portrait.ts는승인 그림체 atlas의 해당 인물 영역만 표시.
+- main.ts:실제 선택 노출을nomination-meta.exposures에 저장. 엔진은UI의저장소를 읽지 않고createState 인자로전달된 시작스냅샷만 사용.
+- 새 회차는선택당4개월, 기존 회차는2개월. 선거 패배 재기는원래4/5년 주기까지시간을건너뛰며 임기와나이를계산.
+
+---
+
 # 아키텍처 v2
 
 - content.ts: 기존 36사건, effect는 레거시 어댑터로 해석
