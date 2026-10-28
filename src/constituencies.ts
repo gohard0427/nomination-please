@@ -28,7 +28,8 @@ export const associations=[
  {id:'field-participation',name:'현장참여네트워크',field:'시민참여',voice:'현장 경험·시민 결정권',party:null,positions:{reform:.5,labor:.5},values:{expertise:-.9,automation:-.4}}
 ] as const;
 export type AssociationState={id:string;approval:number;trust:number;participation:number;lastReason:string;contacts:number};
-export type Campaign={version:1|2;groups:AssociationState[];reviews:{source:string;event:string;verdict:'원칙 유지'|'입장 수정'|'기준 충돌';quote:string}[];nominee?:{partyId:string;name:string;playerPartyId:string|null;thirdPartyId:string};rivalPartyId:string|null};
+export type SupportSnapshot={version:1;turn:number;cardId:string;choice:string;values:{id:string;approval:number;trust:number;participation:number}[]};
+export type Campaign={supportSnapshot?:SupportSnapshot;version:1|2;groups:AssociationState[];reviews:{source:string;event:string;verdict:'원칙 유지'|'입장 수정'|'기준 충돌';quote:string}[];nominee?:{partyId:string;name:string;playerPartyId:string|null;thirdPartyId:string};rivalPartyId:string|null};
 export function createCampaign(seed:number):Campaign{return {version:2,groups:associations.map((g,i)=>({id:g.id,approval:45+((seed+i*11)%13),trust:45,participation:0,lastReason:'아직 공개적으로 함께한 선택이 없습니다.',contacts:0})),reviews:[],rivalPartyId:parties[seed%parties.length].id};}
 export function applyPoliticalValues(s:State,card:Card,index:0|1){const values=(card as Card&{values?:[Record<string,number>,Record<string,number>]}).values?.[index];if(values)for(const r of s.rows){const preferences:Record<string,number>={disclosure:clamp(r.preferences[11]*.7-r.preferences[10]*.2,-1,1),history:clamp(r.preferences[10]*.7+((r.profile%5)-2)*.12,-1,1),alliance:clamp(r.partyPrefs[0]*.7-r.partyPrefs[1]*.5+((r.profile%7)-3)*.1,-1,1),faithPolitics:clamp(-r.preferences[10]*.7+((r.profile%7)-3)*.08,-1,1),faithAutonomy:clamp(r.preferences[11]*.5+((r.profile%5)-2)*.2,-1,1),expertise:clamp(r.preferences[0]*.6-r.preferences[11]*.3+((r.profile%7)-3)*.13,-1,1),automation:clamp(r.preferences[0]*.5-r.preferences[1]*.5,-1,1),order:clamp(-r.preferences[10],-1,1)};const effect=Object.entries(values).reduce((sum,[key,value])=>sum+(preferences[key]??0)*value,0);r.opinion=clamp(r.opinion+effect*.07,-4,4);}
  if(card.id==='age-generations')for(const r of s.rows){const age=Math.floor(r.profile/16);const direction=age===0?1:age===2?-1:0;r.opinion=clamp(r.opinion+direction*(index===0?.08:-.08),-4,4);}}
@@ -42,4 +43,22 @@ export function applyAssociations(s:State,card:Card,index:0|1,signals:Signal[]){
  if(a.contacts>=2&&Math.abs(delta)>1.5){for(const r of s.rows){const affinity=policy.length?policy.reduce((n,x)=>n+Math.max(0,r.preferences[policyIds.indexOf(x.topic)]*(g.positions as Record<string,number>)[x.topic]),0)/policy.length:.2;r.organization=clamp(r.organization+affinity*(delta>0?1:-1)*a.participation/50000);r.opinion=clamp(r.opinion+affinity*delta/1000,-4,4);}}
  if(Math.abs(delta)>2.5)news.push(`${g.name}: ${a.lastReason}${partyGap&&delta>0?' 정책에는 동의하지만 정당의 거리는 남아 있습니다.':''}`);
  }if(card.id.startsWith('religion-')){const names=associations.filter(g=>g.field==='종교').map(g=>g.name);news.sort((a,b)=>Number(names.some(n=>b.startsWith(n)))-Number(names.some(n=>a.startsWith(n))));}return news.slice(0,2);}
-export function associationView(s:State){return (s.campaign?.groups??[]).map(a=>{const g=associations.find(x=>x.id===a.id)!;return {name:g.name,field:g.field,voice:g.voice,party:g.party?parties.find(p=>p.id===g.party)!.name+'과 가까움':'독립적',status:a.contacts===0?'아직 접점 없음':a.approval>=65?'지지 확대':a.approval<40?'이탈 조짐':'설득 중',depth:a.participation>=22?'현장 참여':a.approval>=60&&a.trust>=50?'정책 지지':a.contacts?'의견 교환':'첫 만남 전',reason:a.lastReason};});}
+/** 직전 선택 전의 실제 값만 저장한다. 과거 수치를 추정하지 않는다. */
+export function recordSupportSnapshot(before:State,after:State,card:Card,index:0|1){
+ if(!before.campaign||!after.campaign)return;
+ after.campaign.supportSnapshot={version:1,turn:before.turn,cardId:card.id,choice:card.choices[index].text,values:before.campaign.groups.map(({id,approval,trust,participation})=>({id,approval,trust,participation}))};
+}
+export function validSupportSnapshot(x:any,ids:string[],turn:number):boolean{
+ if(x===undefined)return true;
+ return !!x&&x.version===1&&Number.isInteger(x.turn)&&x.turn>=0&&x.turn<=turn&&typeof x.cardId==='string'&&x.cardId.length>0&&x.cardId.length<=150&&typeof x.choice==='string'&&x.choice.length>0&&x.choice.length<=1000&&Array.isArray(x.values)&&x.values.length===ids.length&&new Set(x.values.map((g:any)=>g?.id)).size===ids.length&&x.values.every((g:any)=>g&&ids.includes(g.id)&&[g.approval,g.trust,g.participation].every(v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100));
+}
+const round=(n:number)=>Math.round((n+Number.EPSILON)*10)/10;
+export function associationView(s:State){return (s.campaign?.groups??[]).flatMap(a=>{
+ const g=associations.find(x=>x.id===a.id);if(!g)return [];
+ const previous=s.campaign?.supportSnapshot?.values.find(x=>x.id===a.id);
+ const delta=previous?round(a.approval-previous.approval):null;
+ const trustDelta=previous?round(a.trust-previous.trust):null;
+ const participationDelta=previous?round(a.participation-previous.participation):null;
+ const changed=previous&&[delta,trustDelta,participationDelta].some(x=>x!==0);
+ return [{id:a.id,name:g.name,field:g.field,voice:g.voice,party:g.party?parties.find(p=>p.id===g.party)!.name+'과 가까움':'독립적',status:a.contacts===0?'아직 접점 없음':a.approval>=65?'지지 확대':a.approval<40?'이탈 조짐':'설득 중',depth:a.participation>=22?'현장 참여':a.approval>=60&&a.trust>=50?'정책 지지':a.contacts?'의견 교환':'첫 만남 전',reason:a.lastReason,contacts:a.contacts,approval:round(a.approval),trust:round(a.trust),participation:round(a.participation),previous:previous?{approval:round(previous.approval),trust:round(previous.trust),participation:round(previous.participation)}:null,delta,trustDelta,participationDelta,changed:!!changed,trustLabel:a.trust>=65?'높음':a.trust<40?'낮음':'보통',participationLabel:a.participation>=22?'강함':a.participation>=8?'형성 중':'약함',choice:changed?s.campaign!.supportSnapshot!.choice:null}];
+ });}

@@ -1,3 +1,9 @@
+# v0.10.1 지지기반 보기
+
+- `constituencies.ts`의 선택적 `supportSnapshot.version:1`에 직전 선택 전 수치를 저장한다. 저장 v3/campaign v2와 호환한다.
+- `applyChoice`와 자금 위기 분기는 모두 실제 선택 전후 비교 기록을 갱신한다. 미접촉 단체나 예전 저장에 가짜 수치를 만들지 않는다.
+- `campaign-ui.ts`의 supportPanel은 단체별 실제값을 표시한다. 필터 상태는 UI에만 있으며 게임 시드·정책 효과를 바꾸지 않는다.
+
 # v0.10 추가 구조
 
 - short-run.ts: 신규48선택 일정·6/9선택 재기·노출 스냅샷·제한적 능력치 보정. 기존 일정은 그대로 보존.

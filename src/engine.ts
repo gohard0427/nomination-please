@@ -1,3 +1,4 @@
+import {recordSupportSnapshot} from './constituencies.ts';
 import {variedDebate} from './debate-variety.ts';
 import {expandedWorldCards} from './world-expansion.ts';
 import {conciseNews} from './concise-results.ts';
@@ -132,7 +133,7 @@ export function applyChoice(current:State,event:Card,index:0|1):State{
  refreshNext(s,newRoute,varietyPool,()=>random(s));
  const after=publicStats(s);for(const k of ['support','funds','fame','party'] as const)if(before[k]!==after[k])out.changes.push({key:k,before:before[k],after:after[k]});
  const pub=projection(s.rows,s.scope,s.localRegion);s.stats.support=pub.support??0;s.stats.fame=pub.fame;
- out.relationships=npcFeedback(current,s);out.news=shortRun(s)?conciseNews(card,index):out.news.slice(0,8);s.history.push({turn:s.turn-1,title:card.title,choice:choice.text,result:out.result,news:out.news,changes:out.changes,...(out.reality?{reality:out.reality}:{})});s.outcome=out;s.stage=s.completed?'ending':'result';return ensureEpilogue(s);
+ out.relationships=npcFeedback(current,s);out.news=shortRun(s)?conciseNews(card,index):out.news.slice(0,8);s.history.push({turn:s.turn-1,title:card.title,choice:choice.text,result:out.result,news:out.news,changes:out.changes,...(out.reality?{reality:out.reality}:{})});s.outcome=out;s.stage=s.completed?'ending':'result';recordSupportSnapshot(current,s,card,index);return ensureEpilogue(s);
 }
 export function acknowledge(s:State):State{if(s.stage!=='result')return s;return {...s,stage:s.afterResult,outcome:null}}
 export function resume(s:State):State{if(s.stage!=='count'||!s.elections.at(-1)?.won)return s;return {...s,stage:s.cursor>=s.route.length?'ending':'play',completed:s.cursor>=s.route.length}}
@@ -160,7 +161,7 @@ function applyFinanceChoice(current:State,card:Card,index:0|1):State{
   s.legal={status:'미신고 자금 수사 중',truth:'플레이어가 받은 미신고 자금의 수수 기록 존재',conclusion:'기록과 사용 경위 확인, 유죄 확정 전',revealed:true};s.pending.push({id:'funds-charge',due:s.cursor+3,source:id});s.flags.push('미신고 정치자금 폭로');recordExposedNickname(s);s.stage='result';s.afterResult='play';
  }
  if(shortRun(s))out.news=conciseNews(card,index);
- const after=publicStats(s);for(const key of ['support','funds','fame','party'] as const)if(before[key]!==after[key])out.changes.push({key,before:before[key],after:after[key]});s.interruptions.push({id,cardId:card.id,turn:s.turn,year:s.year,month:s.month,title:card.title,speaker:card.speaker,choiceIndex:index,choice:choice.text,result:out.result,news:out.news,changes:out.changes});s.flags=[...new Set(s.flags)];if(s.stage==='result'){out.relationships=npcFeedback(current,s);s.outcome=out;}return ensureEpilogue(s);
+ const after=publicStats(s);for(const key of ['support','funds','fame','party'] as const)if(before[key]!==after[key])out.changes.push({key,before:before[key],after:after[key]});s.interruptions.push({id,cardId:card.id,turn:s.turn,year:s.year,month:s.month,title:card.title,speaker:card.speaker,choiceIndex:index,choice:choice.text,result:out.result,news:out.news,changes:out.changes});s.flags=[...new Set(s.flags)];if(s.stage==='result'){out.relationships=npcFeedback(current,s);s.outcome=out;}recordSupportSnapshot(current,s,card,index);return ensureEpilogue(s);
 }
 
 function npcFeedback(before:State,after:State){return after.npcs.flatMap(n=>{const old=before.npcs.find(x=>x.id===n.id);if(!old)return [];if(n.trust<old.trust||n.relationship<old.relationship)return [n.id+': 관계에 부담이 남았습니다.'];if(n.trust>old.trust||n.relationship>old.relationship)return [n.id+': 인연이 쌓였습니다.'];return [];}).slice(0,2);}
