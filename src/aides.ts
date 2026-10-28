@@ -1,3 +1,5 @@
+import {queueMergerEntry} from './merger-content.ts';
+import {isMerged} from './parties.ts';
 import type {State,NPC} from './engine.ts';
 import type {Card} from './content.ts';
 import {shortRun} from './short-run.ts';
@@ -9,6 +11,6 @@ export const aides=[
  {party:'green',id:'류초록',role:'환경·지역 보좌관',goal:'환경 비용과 지역 부담을 함께 확인한다',advice:'환경 비용도 어느 동네가 내는지 봐야 합니다.',topic:'environment'},
  {party:'guardian',id:'권기준',role:'조직·일정 보좌관',goal:'강경 지지층과 공적 절차의 갈등을 다룬다',advice:'지지자의 박수와 공적 절차는 따로 확인합시다.',topic:'society'}
 ];
-export function activeAide(s:State){return shortRun(s)?aides.find(a=>a.party===s.partyId):undefined;}
-export function syncAide(s:State){const a=activeAide(s);if(!a||s.npcs.some(n=>n.id===a.id))return;const n:NPC={id:a.id,role:a.role,relationship:15,trust:35,loyalty:40,ambition:50,influence:35,goals:[a.goal],memoryTags:[],knownFacts:['현재 정당에서 활동을 함께 시작함'],secretIds:[]};s.npcs.push(n);s.flags.push('보좌진 합류:'+a.id+':'+s.turn);}
+export function activeAide(s:State){return shortRun(s)?aides.find(a=>a.party===(isMerged(s)&&s.partyId==='labor'&&s.route[s.cursor]?.includes('green')?'green':s.partyId)):undefined;}
+export function syncAide(s:State){if(isMerged(s)&&s.partyId==='labor'){for(const a of aides.filter(a=>['labor','green'].includes(a.party))){if(!s.npcs.some(n=>n.id===a.id))s.npcs.push({id:a.id,role:a.role,relationship:15,trust:35,loyalty:40,ambition:50,influence:35,goals:[a.goal],memoryTags:[],knownFacts:['노동환경당의 노동·환경 협력자로 합류'],secretIds:[]});}queueMergerEntry(s);return;}const a=activeAide(s);if(!a||s.npcs.some(n=>n.id===a.id))return;const n:NPC={id:a.id,role:a.role,relationship:15,trust:35,loyalty:40,ambition:50,influence:35,goals:[a.goal],memoryTags:[],knownFacts:['현재 정당에서 활동을 함께 시작함'],secretIds:[]};s.npcs.push(n);s.flags.push('보좌진 합류:'+a.id+':'+s.turn);}
 export function aideCard(card:Card,s:State){const a=activeAide(s);if(a&&card.speaker.includes('고단비')){card.speaker=card.speaker.replace('고단비',a.id);if(card.id.startsWith('fresh-')&&'signals' in card&&(card as any).signals[0].some((x:any)=>x.topic===a.topic))card.body+=' '+a.id+': “'+a.advice+'”';}return card;}

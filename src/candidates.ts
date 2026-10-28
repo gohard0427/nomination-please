@@ -1,4 +1,4 @@
-import {parties,partyById} from './parties.ts';
+import {parties,partiesFor,partyById,type PartyWorld} from './parties.ts';
 import type {State} from './engine.ts';
 export const candidates=[
  {id:'seo',name:'서민재',partyId:'future',agenda:'지역 개발·기업 유치',quote:'지역을 살리는 실력 있는 행정',art:'candidate-seo'},
@@ -10,5 +10,5 @@ export const candidates=[
  {id:'nam',name:'남기찬',partyId:null,agenda:'지역 기반·생활 정치',quote:'당보다 동네가 먼저입니다',art:'candidate-nam'}
 ];
 export function candidateFor(partyId:string|null){return candidates.find(c=>c.partyId===partyId)!;}
-export function candidateLabel(partyId:string|null){const c=candidateFor(partyId);return c.name+' · '+(partyById(partyId)?.name??'무소속');}
-export function electionOpponents(s:State){const choices=parties.filter(p=>p.id!==s.partyId);const first=choices[(s.initialSeed+s.elections.length)%choices.length].id;const other=choices.filter(p=>p.id!==first);const third=(s.initialSeed+s.elections.length)%3===0&&s.partyId!==null?null:other[(s.initialSeed>>>3)%other.length].id;return {first,third};}
+export function candidateLabel(partyId:string|null,s?:PartyWorld){const c=candidateFor(partyId);return c.name+' · '+(partyById(partyId,s)?.name??'무소속');}
+export function electionOpponents(s:State){const choices=partiesFor(s).filter(p=>p.id!==s.partyId);const first=choices[(s.initialSeed+s.elections.length)%choices.length].id;const other=choices.filter(p=>p.id!==first);const third=(s.initialSeed+s.elections.length)%3===0&&s.partyId!==null?null:other[(s.initialSeed>>>3)%other.length].id;return {first,third};}
