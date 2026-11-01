@@ -94,7 +94,35 @@ export function chooseReality(s:State,card:Card,index:0|1):RealityNote|undefined
  // 기존 회차의 과거 결과에 소급해 자료를 만들지 않는다. 업그레이드 뒤 새 선택부터 비율을 센다.
  const seen=new Set(s.history.flatMap(h=>h.reality?[h.reality.id]:[]));
  if(!forced.has(card.id)&&!realityDue(s))return;
- const ordered=realityEntries.slice().sort((a,b)=>Number(b.id.startsWith('housing-'))-Number(a.id.startsWith('housing-')));const entry=ordered.find(e=>e.cards.includes(realityLinks[card.id]??card.id)&&!seen.has(e.id)&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
+ const contextual:string[]=[];
+ const canUse=(id:string)=>!seen.has(id);
+ if(s.flags.includes('선택과 능력: v0.14')){
+  const text=card.title+' '+card.body;
+  // 실제 문장에 등장하는 행위와 직접 관련된 기존 제도·자료만 보완한다.
+  if(/민원|접수 번호|공개 답변|기관.*요청/.test(text))contextual.push('petition-right','public-consultation');
+  if(/정치자금|소액후원|후원자|후원금|정산/.test(text))contextual.push('political-money','campaign-use');
+  if(/국비|국가 예산|공적 자금|공약 재원|예산.*배분|배분.*예산/.test(text))contextual.push('budget-consent');
+  if(/증세|세율|세금 공약/.test(text))contextual.push('tax-law');
+  if(/임대|세입자|주거 지원/.test(text))contextual.push('housing-rights');
+  if(/야근|밤샘|노동시간|교대 근무/.test(text))contextual.push('work-rest');
+  if(/집회|시위/.test(text))contextual.push('assembly-association');
+  if(/당원|탈당|입당/.test(text))contextual.push('party-membership');
+  if(s.partyId&&/공천|당내 경선/.test(text))contextual.push('party-democracy');
+  if(/실명|사생활|개인정보|명부/.test(text))contextual.push('privacy-verification');
+  if(/공청회|다수 의석|소수 의견|견제기관/.test(text))contextual.push('majority-limits');
+  if(card.id==='debate-economy'&&/AI|자동화/.test(text))contextual.push(/행정|직원/.test(text)?'ai-time':'ai-junior','ai-business');
+  if(card.id==='debate-economy'&&/세금|증세|재원/.test(text))contextual.push('tax-law');
+  if(card.id==='debate-housing'&&/대출|가계.*빚/.test(text))contextual.push('housing-debt');
+  if(card.id==='debate-housing'&&/재건축|공공시설/.test(text))contextual.push('housing-public-return');
+  if(card.id==='debate-housing'&&/임대료|세입자/.test(text))contextual.push('housing-rights');
+  if(card.id==='debate-society'&&/돌봄/.test(text))contextual.push('integrated-care','care-workforce');
+  if(card.id==='debate-society'&&/노후|고령/.test(text))contextual.push('pension-eligibility');
+  if(card.id==='debate-society'&&/의료|진료/.test(text))contextual.push('health-access');
+  if(card.id==='debate-politics'&&/원본|제보|자료/.test(text))contextual.push('privacy-verification','public-information');
+  if(card.id==='debate-politics'&&/공청회|다수|표결/.test(text))contextual.push('majority-limits');
+  if(card.id==='debate-politics'&&/은인|자리|선발/.test(text))contextual.push('recruit-opportunity');
+ }
+ const ordered=realityEntries.slice().sort((a,b)=>{const ai=contextual.indexOf(a.id),bi=contextual.indexOf(b.id);if(ai>=0||bi>=0)return ai<0?1:bi<0?-1:ai-bi;return Number(b.id.startsWith('housing-'))-Number(a.id.startsWith('housing-'));});const entry=ordered.find(e=>(contextual.includes(e.id)||e.cards.includes(realityLinks[card.id]??card.id))&&canUse(e.id)&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
  if(!entry)return;
  const note:RealityNote={id:entry.id,version:1,cardId:card.id,title:entry.title,body:entry.body,reflection:realityLinks[card.id]?'선택과 관련된 현실의 조건입니다. 특정 정책의 효과를 보장하지 않습니다.':entry.reflections[index],asOf:entry.asOf,checkedOn:entry.id.startsWith('housing-')?'2026-10-25':'2026-10-24',limit:entry.limit,sources:entry.sources.map(x=>({...x}))};note.brief=briefFor(note);return note;
 }
@@ -123,3 +151,7 @@ const housingNew=[
 ];realityEntries.push(...housingNew);
 
 realityEntries.push(n('housing-owners','housing-tax','주택 보유 건수','2024년 주택 소유자 중 2건 이상 보유한 사람은 237.7만 명으로 14.9%였습니다. 전체 국민이나 전체 가구의 비율이 아닙니다.',['보유 건수를 앞세웠습니다.','가액과 취득 사유를 앞세웠습니다.'],[src('국가데이터처 · 2024 주택소유통계','https://mods.go.kr/board.es?act=view&bid=11471&list_no=439298&mid=a10301100400')],'2024년 기준 · 2025-11 발표','개인 소유자 기준입니다. 보유 건수만으로 주택 가격·투기 여부·적정 세금을 판정하지 않습니다.'));
+
+// v0.14 전용 사건도 기존 검증 자료와 직접 관련될 때만 연결한다.
+const skillReality:Record<string,string>={'skill-0-0':'political-money','skill-0-1':'assembly-association','skill-1-0':'petition-right','skill-1-1':'public-consultation','skill-2-0':'campaign-use','skill-2-1':'campaign-use','skill-3-1':'petition-right','skill-4-0':'public-information','skill-4-1':'public-information'};
+for(const [cardId,entryId]of Object.entries(skillReality)){const entry=realityEntries.find(e=>e.id===entryId);if(entry&&!entry.cards.includes(cardId))entry.cards.push(cardId);}

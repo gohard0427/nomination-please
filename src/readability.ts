@@ -1,3 +1,4 @@
+import {retrySize} from './patch14.ts';
 import type {Card} from './content.ts';import type {State} from './engine.ts';
 import {readabilityDrafts,wordingVariants} from './readability-data.ts';
 import {readabilityPolicy} from './readability-policy.ts';
@@ -12,7 +13,7 @@ const clean=(t:string)=>t.replaceAll('관철가 목표','관철하는 것이 목
 export function readableRevision(card:Card,s:State):Card{
  if(!s.flags.includes(READABILITY_FLAG))return card;
  const draft=readabilityDrafts[card.id],originalBody=card.body,originalChoices=card.choices.map(c=>unquote(c.text));
- const retry=s.flags.some(f=>{const m=/^재도전:(local|central|presidential):(\d+)$/.exec(f);return m&&s.cursor>=Number(m[2])&&s.cursor<Number(m[2])+(m[1]==='presidential'?9:6);});
+ const retry=s.flags.some(f=>{const m=/^재도전:(local|central|presidential):(\d+)$/.exec(f);return m&&s.cursor>=Number(m[2])&&s.cursor<Number(m[2])+retrySize(s,m[1]==='presidential');});
  // 동적 분기·실제 인용을 먼저 보존하고 맞는 문구만 바꾼다.
  const variant=variations.get(key(card.id,originalChoices));
  if(draft){

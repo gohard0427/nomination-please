@@ -112,3 +112,6 @@ final-duel.ts는 실제 과거/직전 답을 참조하는 공방과 자금 보�
 
 ## v0.13
 `causal-revision.ts`는 새 회차의 마지막 표시 변환에서 문구·효과·결과·신호를 함께 교체한다. `causal-data.ts`는 승인된 문장, `causal-debate.ts`는 15개 토론 묶음과 명시적 인용 허용 목록이다. history.decision은 선택 당시 원문과 두 선택을 기록하며 기존 history에 소급 추가하지 않는다. `PATCH_0_13.md`에 호환 정책과 적용 범위를 기록했다.
+
+## v0.14
+`patch14.ts`가 신규 규칙과8/8/11 재기 길이를 구분한다. `abilities.ts`는 사용 가능 조건·사용원장·실제 효과를, `ability-ui.ts`는 확인/진행 표시를 담당한다. 사용 저장 성공 전 정보가 UI에 공개되지 않는다. `quest.ts`는 실제 발언/자기편 후속을 검증하고 결산 후 메타 해금으로 연결한다. `ai-player.ts`는 AI 전용 관계/표현, `skill-content.ts`와`retry14.ts`는 슬롯 대체 사건을 관리한다. `clarity14.ts`와`causal-debate.ts`는 같은 쟁점의 선택 의미를 보존한다. `world-art.ts`는 승인된 원화의 실제 구획을 사용한다. 기존8인물ID는 재정렬하지 않는다.

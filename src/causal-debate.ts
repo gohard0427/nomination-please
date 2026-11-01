@@ -1,10 +1,11 @@
+import {modern} from './patch14.ts';
 import type {State} from './engine.ts';
 import type {Card} from './content.ts';
 import type {PolicyId} from './support.ts';
 import {paired} from './causal-revision.ts';
 type Round={title:string;ask:string;choices:[string,string];results:[string,string];notes:[string,string];topic:PolicyId;stances:[number,number];sources:string[]};
 export const debateRounds:Record<string,Round>={
- 'debate-economy':{title:'AI와 첫 일자리',ask:'AI를 도입한 기업에서 신입 채용이 줄고 있습니다. 기업 지원금을 어디에 집중하겠습니까?',choices:['사람을 실제로 새로 뽑는 기업에 지원금을 주겠습니다.','기술 도입 지원은 유지하고, 줄어든 일자리의 노동자는 교육과 다른 회사 취업으로 돕겠습니다.'],results:['신규 채용을 지원 조건으로 걸었습니다. 채용 여력이 없는 기업은 지원에서 빠집니다.','기술 투자는 이어갑니다. 교육을 마쳐도 바로 취업할 수 있는지는 따로 확인해야 합니다.'],notes:['채용 연계 지원 · 기술 투자 지원 범위 축소','기술 투자 유지 · 재취업까지 소득 공백'],topic:'labor',stances:[.65,.2],sources:['work-automation','fresh-party-reform-1']},
+ 'debate-economy':{title:'AI와 첫 일자리',ask:'AI를 도입한 기업에서 신입 채용이 줄고 있습니다. 기업 지원금을 어디에 집중하겠습니까?',choices:['사람을 실제로 새로 뽑는 기업에 지원금을 주겠습니다.','기술 도입 지원은 유지하고, 줄어든 일자리의 노동자는 교육과 다른 회사 취업으로 돕겠습니다.'],results:['신규 채용을 지원 조건으로 걸었습니다. 채용 여력이 없는 기업은 지원에서 빠집니다.','기술 투자는 이어갑니다. 교육을 마쳐도 바로 취업할 수 있는지는 따로 확인해야 합니다.'],notes:['채용 연계 지원 · 기술 투자 지원 범위 축소','기술 투자 유지 · 재취업까지 소득 공백'],topic:'labor',stances:[.65,.2],sources:['work-automation']},
  'debate-housing':{title:'집값과 빚',ask:'대출을 더 풀면 집을 살 기회가 늘지만 집값과 가계 빚도 오를 수 있습니다. 무엇을 먼저 하겠습니까?',choices:['갚을 능력이 있는 실수요자의 주택 대출 한도를 높이겠습니다.','대출 한도는 유지하고, 임대주택과 새 주택 공급에 집중하겠습니다.'],results:['실수요자의 대출 기회를 늘리는 안입니다. 상환 부담과 가격 상승 위험도 함께 남습니다.','추가 대출 대신 공급을 택했습니다. 실제 입주까지 기다려야 하는 사람들의 대책은 남습니다.'],notes:['구매 기회 확대 · 빚·가격 상승 위험','빚 증가 억제 · 입주까지 시간 필요'],topic:'housing',stances:[-.45,.65],sources:[]},
  'debate-society':{title:'노후의 소득',ask:'연금만으로 생활하기 어려운 고령자가 늘었습니다. 한정된 추가 예산을 어디에 먼저 쓰겠습니까?',choices:['일할 수 없는 고령자의 생활비 지원부터 늘리겠습니다.','일하고 싶은 고령자가 돈을 벌 수 있도록 일자리부터 늘리겠습니다.'],results:['일하기 어려운 고령자의 생활비를 우선했습니다. 일자리 사업에 쓸 여력은 줄었습니다.','일할 수 있는 고령자의 소득 기회를 우선했습니다. 일할 수 없는 사람의 생활비 대책은 남았습니다.'],notes:['생활비 우선 · 추가 일자리 예산 제약','일자리 우선 · 일할 수 없는 사람의 사각지대'],topic:'welfare',stances:[.8,.4],sources:[]},
  'debate-politics':{title:'우리 편 의혹도 검증합니까?',ask:'우리 캠프 관계자에 대한 의혹이 나왔습니다. 언론에 원본을 모두 공개하면 제보자의 신원이 드러날 수 있습니다. 어떻게 하겠습니까?',choices:['제보자 신원은 가리고, 검증에 필요한 원본 자료를 언론에도 공개하겠습니다.','원본은 독립 검증단에 제출하고, 언론에는 검증 결과부터 공개하겠습니다.'],results:['자료 공개를 우선했습니다. 신원을 가려도 추가 추정으로 피해가 생길 위험은 남습니다.','독립 검증을 먼저 받습니다. 결과가 나올 때까지 숨긴다는 비판을 감수해야 합니다.'],notes:['신속한 공개 · 제보자 추정 위험','독립 검증 우선 · 해명 지연 비판'],topic:'reform',stances:[.8,.55],sources:[]},
@@ -33,13 +34,33 @@ const alternateCosts:Record<string,[string,string]>={
 };
 export function causalDebate(card:Card,s:State){
  let r=debateRounds[card.id];if(!r)return card;
+ const sources:Record<string,string[][]>={
+ 'debate-economy':[['work-automation'],['policy','tax-review'],['fresh-central-3']],
+ 'debate-housing':[['housing-credit'],[],['housing-rebuild']],
+ 'debate-society':[[],[],['world-hospital-local']],
+ 'debate-politics':[[],['majority-limits'],[]],
+ 'debate-security':[['foreign-alliance'],['north-missile'],['world-tariff-central','world-china-central']]
+ };
+ const exact=modern(s)?[...s.history].reverse().find(h=>h.decision&&sources[card.id]?.some(ids=>ids.includes(h.decision!.cardId))):undefined;
+ const anchoredVariant=exact?sources[card.id].findIndex(ids=>ids.includes(exact.decision!.cardId)):-1;
  const hasAnchor=s.history.some(h=>h.decision&&r.sources.includes(h.decision.cardId));
  const retry=s.flags.filter(f=>f.startsWith('토론 재도전:')).length;
- const variant=hasAnchor?0:(s.initialSeed+card.id.length+retry+1)%3;
- if(variant){const [title,ask,a,b,topic,sa,sb]=alternate[card.id][variant-1];r={title,ask,choices:[a,b],topic,stances:[sa,sb],sources:[],notes:alternateCosts[title],results:[a+' 우선순위를 분명히 했습니다. 뒤로 미룬 방안을 요구하는 지지자도 설득해야 합니다.',b+' 우선순위를 분명히 했습니다. 뒤로 미룬 방안을 요구하는 지지자도 설득해야 합니다.']};}
+ const variant=anchoredVariant>=0?anchoredVariant:hasAnchor?0:(s.initialSeed+card.id.length+retry+1)%3;
+ if(variant){const [title,ask,a,b,topic,sa,sb]=alternate[card.id][variant-1];r={title,ask,choices:[a,b],topic,stances:[sa,sb],sources:modern(s)?sources[card.id]?.[variant]??[]:[],notes:alternateCosts[title],results:[a+' 우선순위를 분명히 했습니다. 뒤로 미룬 방안을 요구하는 지지자도 설득해야 합니다.',b+' 우선순위를 분명히 했습니다. 뒤로 미룬 방안을 요구하는 지지자도 설득해야 합니다.']};}
+ if(modern(s)&&card.id==='debate-economy'){
+ const admin=[...s.history].reverse().find(h=>h.decision?.cardId==='fresh-party-reform-1');
+ if(admin&&(!exact||admin.turn>exact.turn))r={title:'AI 행정과 공공 일자리',ask:'행정에 AI를 도입하면 처리 속도는 빨라질 수 있지만 기존 직원의 일이 줄어듭니다. 어떤 순서로 추진할까요?',choices:['직원의 재교육과 다른 업무 배치를 마련한 뒤 AI를 도입하겠습니다.','일부 업무에서 AI 효과를 먼저 시험하고, 확인된 결과로 인력 전환을 협의하겠습니다.'],results:['직원 전환 준비를 먼저 하기로 했습니다. 도입 일정과 교육 비용도 설명해야 합니다.','일부 업무의 시범 적용을 먼저 하기로 했습니다. 시험 중 업무가 줄어드는 직원의 대책은 남았습니다.'],notes:['전환 준비 우선 · 도입 지연','시범 적용 우선 · 과도기 업무 불안'],topic:'labor',stances:[.7,.35],sources:['fresh-party-reform-1']};
+ }
+ if(modern(s)&&card.id==='debate-housing'){
+ const lease=[...s.history].reverse().find(h=>h.decision?.cardId==='housing-lease');
+ if(lease&&(!exact||lease.turn>exact.turn))r={title:'임대료와 다음 세입자',ask:'계약을 갱신하는 세입자의 임대료 인상을 더 제한하면 새 계약의 가격과 매물이 달라질 수 있습니다. 어떤 기준을 요구할까요?',choices:['기존 세입자의 인상 상한을 더 낮추겠습니다.','상한은 유지하고 새로 집을 구하는 사람의 주거 지원을 늘리겠습니다.'],results:['갱신 세입자의 부담을 우선했습니다. 새 계약 시장의 가격과 공급도 확인해야 합니다.','현행 상한과 신규 세입자 지원을 택했습니다. 갱신 가구의 부담은 그대로 남을 수 있습니다.'],notes:['갱신 부담 완화 · 신규 계약 영향','신규 지원 확대 · 기존 부담 잔존'],topic:'housing',stances:[.7,.35],sources:['housing-lease']};}
+ if(modern(s)&&card.id==='debate-society'){
+ const care=[...s.history].reverse().find(h=>h.decision?.cardId==='care');
+ if(care&&(!exact||care.turn>exact.turn))r={title:'돌봄을 직접 늘릴까요?',ask:'돌봄 예산을 공공 서비스 인력에 쓸지, 주민이 서비스를 고를 이용권 지원에 쓸지 묻습니다. 이전의 우선순위를 유지하겠습니까?',choices:['공공 돌봄 인력을 직접 늘리겠습니다.','주민이 서비스를 선택할 이용권 지원을 늘리겠습니다.'],results:['공공 공급을 우선했습니다. 채용과 시설 확보까지의 공백은 남습니다.','이용자의 선택을 우선했습니다. 서비스를 제공할 곳이 적은 지역은 별도 대책이 필요합니다.'],notes:['공공 공급 · 인력 확보 시간','선택권 · 지역 서비스 격차'],topic:'welfare',stances:[.8,.25],sources:['care']};}
  // 넓은 정책 태그는 인용 근거가 아니다. 같은 정책 대상·수단인 실제 결정만 연결한다.
+ if(modern(s)&&variant===0&&r.title!=='AI 행정과 공공 일자리')r={...r,sources:sources[card.id]?.[0]??r.sources};
  const prior=[...s.history].reverse().find(h=>h.decision&&r.sources.includes(h.decision.cardId));
- const quote=prior?`경쟁 후보가 ${prior.turn+1}번째 선택의 실제 답변 “${prior.choice}”을 띄웁니다. 같은 기업 지원 기준을 이번 공약에도 적용할지 묻습니다. `:'경쟁 후보가 묻습니다. ';
+ const quote=prior?`경쟁 후보가 ${prior.turn+1}번째 선택의 실제 답변 “${prior.choice}”을 띄웁니다. ${modern(s)?'같은 쟁점의 공약에도 그 우선순위를 적용할지 묻습니다.':'같은 기업 지원 기준을 이번 공약에도 적용할지 묻습니다.'} `:'경쟁 후보가 묻습니다. ';
  paired(card,s,quote+r.ask,r.choices,r.results,r.notes,r.topic,r.stances,[{trust:5,org:1},{trust:2,org:4}]);
  if(r.title==='동맹의 청구서'){Object.assign(card,{values:[{alliance:.9},{alliance:-.5}]});const fit:Record<string,number>={future:.95,better:.3,reform:.3,labor:.1,guardian:.9};if(s.partyId)card.choices.forEach((c,i)=>c.effect.party=Math.round((fit[s.partyId??'']??0)*(i===0?.9:-.5)*6));}
  card.title=(s.flags.some(f=>f.startsWith('토론 재도전:'))?'재도전 · ':'')+r.title+' · 최종 토론';card.speaker='경쟁당 후보 · '+(s.campaign?.nominee?.name??'경쟁 후보');

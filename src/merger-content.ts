@@ -1,3 +1,4 @@
+import {statementExposure} from './statement-exposure.ts';
 import {shortRoute,shortRun} from './short-run.ts';
 import {v,type VarietyCard} from './event-factory.ts';import type {State} from './engine.ts';import type {Card} from './content.ts';
 export const mergerCards:VarietyCard[]=[
@@ -12,7 +13,7 @@ export const mergerCards:VarietyCard[]=[
  ['비용과 일정을 다시 공개하고, 약속을 조정하겠습니다.',{trust:3,party:-3,fame:2},'공약에 수정표를 붙였습니다. 지지자들은 자기 이름이 빠졌는지부터 봤습니다.','실행 가능성 보완 · 후퇴 비판·지지층 설득'],'tax',{kind:'memory',signals:[[{topic:'tax',stance:.6},{topic:'labor',stance:.5},{topic:'environment',stance:.5}],[{topic:'tax',stance:-.3},{topic:'labor',stance:.15},{topic:'environment',stance:.15}]]})
 ];
 export function mergerContext(card:Card,s:State){if(card.id==='merger-return'){const p=s.statements.find(x=>x.id==='merger-plant');if(p)card.body=`당신이 실제로 한 말 “${p.text}”. `+card.body;}return card;}
-export function recordMerger(s:State,c:Card,i:0|1){if(c.id==='merger-plant'){s.statements.push({id:c.id,turn:s.turn,topic:'산업 전환',text:c.choices[i].text,principle:i===0?'기후 목표에 맞춘 폐쇄 시한':'고용 대책을 갖춘 산업 전환',strength:i===0?3:1,exposure:s.stats.fame,contextTags:[c.id]});const at=s.route.findIndex((id,at)=>at>s.cursor&&shortRoute[at]==='?presidential'&&!id.startsWith('world-'));if(at>=0&&!s.route.includes('merger-return'))s.route[at]='merger-return';}
+export function recordMerger(s:State,c:Card,i:0|1,slots?:string[]){if(c.id==='merger-plant'){s.statements.push({id:c.id,turn:s.turn,topic:'산업 전환',text:c.choices[i].text,principle:i===0?'기후 목표에 맞춘 폐쇄 시한':'고용 대책을 갖춘 산업 전환',strength:i===0?3:1,exposure:statementExposure(s),contextTags:[c.id]});const at=s.route.findIndex((id,at)=>at>s.cursor&&(slots??shortRoute)[at]==='?presidential'&&!id.startsWith('world-')&&!id.startsWith('skill-')&&!(id.startsWith('executive-')&&s.presidency?.debtAccepted));if(at>=0&&!s.route.includes('merger-return'))s.route[at]='merger-return';}
  if(c.id==='merger-return'){const p=s.statements.find(p=>p.id==='merger-plant');if(p&&s.campaign){s.campaign.reviews.push({source:p.id,event:c.id,quote:p.text,verdict:i===0?'원칙 유지':'입장 수정'});s.flags.push('부메랑: 산업 전환');}}
  if(['merger-plant','merger-candidate'].includes(c.id)){const labor=s.npcs.find(n=>n.id==='장현장'),green=s.npcs.find(n=>n.id==='류초록');const favorsLabor=c.id==='merger-plant'?i===1:i===0;for(const [n,favored] of [[labor,favorsLabor],[green,!favorsLabor]] as const)if(n){n.relationship=Math.max(0,Math.min(100,n.relationship+(favored?5:-4)));n.memoryTags.push(c.id+':'+i);}}
 }

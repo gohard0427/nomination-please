@@ -1,3 +1,4 @@
+import {statementExposure} from './statement-exposure.ts';
 import type {State,Outcome} from './engine.ts';import type {Card} from './content.ts';import {v} from './event-factory.ts';
 import {presidents,currentPresident} from './presidents.ts';
 export const presidentEvents=[
@@ -29,7 +30,7 @@ export function presidentEvent(card:Card,s:State){if(!s.presidency)return card;c
  return card;
 }
 export function recordPresidentEvent(s:State,c:Card,i:0|1){const p=s.presidency;if(!p)return;const who=c.id==='executive-help'?currentPresident(s)?.id:p.debtId;if(c.id==='executive-help'){p.debtId=who;p.debtAccepted=i===0;}
- if(c.id.startsWith('executive-')&&who){p.contacts.push({id:who,turn:s.turn,event:c.id,choice:i});if(c.id==='executive-request')s.statements.push({id:c.id,turn:s.turn,topic:'정치적 은인',text:c.choices[i].text,principle:s.flags.includes('선택 인과: v1')?c.choices[i].text:i===0?'조건을 공개한 협력':'은혜와 정책의 분리',strength:i===0?1:3,exposure:s.stats.fame,contextTags:[who]});if(c.id==='executive-return'){const q=s.statements.find(x=>x.id==='executive-request');if(q){s.campaign?.reviews.push({source:q.id,event:c.id,quote:q.text,verdict:i===0?'원칙 유지':'입장 수정'});s.flags.push('부메랑: 정치적 은인');}}}
+ if(c.id.startsWith('executive-')&&who){p.contacts.push({id:who,turn:s.turn,event:c.id,choice:i});if(c.id==='executive-request')s.statements.push({id:c.id,turn:s.turn,topic:'정치적 은인',text:c.choices[i].text,principle:s.flags.includes('선택 인과: v1')?c.choices[i].text:i===0?'조건을 공개한 협력':'은혜와 정책의 분리',strength:i===0?1:3,exposure:statementExposure(s),contextTags:[who]});if(c.id==='executive-return'){const q=s.statements.find(x=>x.id==='executive-request');if(q){s.campaign?.reviews.push({source:q.id,event:c.id,quote:q.text,verdict:i===0?'원칙 유지':'입장 수정'});s.flags.push('부메랑: 정치적 은인');}}}
 }
 export function queuePresidentEvents(s:State){if(!s.calendar)return;const slots:[number[],string][]=[[[8,7,9],'executive-help'],[[30,32,35],'executive-request'],[[38,39],'executive-return']];for(const [positions,id] of slots){const at=positions.find(at=>!s.route[at].startsWith('world-')&&!s.route[at].startsWith('merger-')&&!s.route[at].startsWith('balance-fund-'));if(at!==undefined)s.route[at]=id;}}
 export function eligiblePresidentEvent(s:State,id:string){if(!s.presidency)return false;if(id==='executive-help')return true;if(id==='executive-request')return s.presidency.debtAccepted===true;return s.statements.some(x=>x.id==='executive-request');}

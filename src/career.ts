@@ -11,6 +11,7 @@ export const rivals=[
  {name:'정꼼꼼',background:'재정 연구자',role:'공약의 숫자를 검증하는 라이벌',goal:'주목받는 공약에 실제 재원과 실행 계획을 붙이기',conflict:'높은 인지도를 유지하면서 어려운 예산 설명도 충분히 할 수 있을지',art:5},
  {name:'강민주',background:'외교·안보 연구자',role:'민간 통제와 안보 비용을 묻는 라이벌',goal:'안보 정책의 책임·예산·시민 통제 원칙을 분명히 하기',conflict:'조직 운영 경험을 살리면서 공개 검증과 시민의 통제를 어떻게 보장할지',art:3}
 ];
+rivals.push({name:'사람결',background:'시민참여 설계자',role:'AI의 책임을 묻는 라이벌',goal:'자동화된 결정에도 시민의 이의 제기와 책임자를 남기기',conflict:'빠른 정책 처리와 시민이 직접 이의를 제기할 기회를 어떻게 지킬지',art:5});
 export function hasCareer(s:State){return s.flags.includes(CAREER_FLAG)}
 export function careerCard(card:Card,s:State){if(!hasCareer(s))return card;const r=rivals[s.job];
  if(card.id==='career-rival-meet'){card.title=r.name+'의 첫 질문';card.speaker='라이벌 · '+r.name;card.body=`${r.background} ${r.name}도 같은 정치 무대에 도전합니다. ${r.goal}가 목표라고 합니다. 두 사람은 ${r.conflict}를 두고 의견이 다릅니다. 공개 토론으로 경쟁할지, 공동 현장 조사부터 해볼지 고르세요.`;}
