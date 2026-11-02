@@ -34,7 +34,19 @@ const common=[
  ['travel','이번에는 표를 부탁하지 않았습니다','여행 기록가','전국을 다시 돕니다. 이름과 장소를 적지만 지지 선언을 부탁하지 않습니다. 수첩에 다른 이야기가 쌓입니다.','travel'],
  ['survival','탈락 이유를 방송합니다','서바이벌 예능 출연','탈락 인터뷰를 길게 했습니다. 방송에는 가장 짧고 솔직했던 한마디가 나갔습니다.','survival']
 ];
-career.push([['gpt-desk','정치보다 민원이 오래갑니다','공공 민원 상담소','정치 활동은 끝났지만 접수 창구는 열어뒀습니다. 주민은 업데이트보다 가로등 수리 일정을 물었습니다.','gpt-desk'],['gpt-video','정정 이력까지 출연했습니다','비디오스타 게스트','진행자는 업데이트 이력 대신 과거 답변을 틀었습니다. 웃음소리가 들어오자 잠시 응답이 늦었습니다.','gpt-video'],['gpt-archive','삭제 버튼은 없습니다','정치기록 보관 서버','다른 정치인의 말을 정리하다 자신의 기록도 검색됐습니다. 수정 이력은 원본 옆에 보관했습니다.','gpt-archive']]);
+career.push([['gpt-desk','정치보다 민원이 오래갑니다','공공 민원 상담소','동네 상담소를 열었습니다. 주민이 “정치 얘기 말고 프린터 좀 봐주세요”라고 했습니다. 오늘은 종이 걸림부터 해결했습니다.','gpt-desk'],['gpt-video','정정 이력까지 출연했습니다','비디오스타 게스트','비디오스타에서 낙선 소감을 물었습니다. “국민의 선택을 존중합니다”라고 하자 진행자가 “여기선 좀 덜 존중해도 돼요”라고 했습니다. 그날 처음 웃음으로 답했습니다.','gpt-video'],['gpt-archive','삭제 버튼은 없습니다','동네 기록관 담당','동네 기록관에서 옛 사진을 정리합니다. 사진 속 자기 현수막을 확대했다가 주민에게 풍경을 가리지 말라는 부탁을 받았습니다.','gpt-archive']]);
+export const aiNicknameStories:Record<string,string>={
+ bird:'채지피는 철새 관찰 모임의 기록 담당이 됐습니다. 이동 경로를 설명하다가 “본인 당적 얘기는 빼주세요”라는 요청을 받았습니다.',
+ loyal:'회고록을 받아쓰게 됐습니다. “예, 대표님”을 너무 자주 넣어서 출판사가 대화 상대는 한 명이면 충분하다고 했습니다.',
+ fan:'팬카페 공지를 맡았습니다. 응원 글은 세 줄, 반론 답변은 서른 줄이었습니다. 운영진이 글자 수부터 제한했습니다.',
+ correction:'동네 소식지의 정정란을 맡았습니다. 원고보다 정정란이 길어지자 다음 호부터 날씨만 쓰기로 했습니다. 다음 날 비가 왔습니다.',
+ merger:'동네 바둑회 두 곳을 합쳤습니다. 회의록을 40쪽 써 왔다가 다음 날부터는 돌만 세게 됐습니다.',
+ ledger:'작은 카페의 장부를 전부 공개했습니다. 손님은 원두값을 읽다 커피가 식었습니다. 다음부터 메뉴판을 맨 위에 뒀습니다.',
+ bookshop:'서점 계산대를 맡았습니다. 아는 사람에게도 정가를 받았습니다. 단골은 흥정 대신 책 추천을 부탁하기 시작했습니다.',
+ phoenix:'가게를 다시 열었습니다. 개업 화환의 “이번에는 오래 하세요”를 읽고 영업시간부터 크게 써 붙였습니다.',
+ copywriter:'동네 가게의 광고 문구를 씁니다. “곧 출시”라고 쓰자 사장님이 물었습니다. “그러니까 언제요?” 이번에는 달력을 폈습니다.',
+ fishing:'낚시터 안내를 맡았습니다. 손님이 “오늘 잘 잡혀요?”라고 묻자 물고기 대신 지난주 장부를 꺼냈습니다. 그 뒤로는 조용히 찌만 봅니다.'
+};
 export const epilogueDefinitions:EpilogueDefinition[]=[...career.flatMap((rows,job)=>rows.map(([id,title,role,story,scene])=>({id,title,role,story,scene,kind:'job' as const,job}))),...nicknames.map(([id,nickname,title,role,story,scene])=>({id,title,role,story,scene,kind:'nickname' as const,nickname})),...common.map(([id,title,role,story,scene])=>({id,title,role,story,scene,kind:'common' as const}))];
 const hash=(seed:number)=>{let n=seed>>>0;n=Math.imul(n^(n>>>16),0x7feb352d);n=Math.imul(n^(n>>>15),0x846ca68b);return (n^(n>>>16))>>>0};
 function fundingEvidence(s:State){return s.interruptions.filter(i=>i.cardId==='funds-crisis'&&i.choiceIndex===1);}
@@ -49,7 +61,7 @@ export function ensureEpilogue(s:State):State{if(s.stage!=='ending'||!s.complete
  if(d.id==='blackmoney')text+=legalResolution==='custody'?' 은퇴 후 재판에서 실제 수수·사용 자료가 증거로 인정됐고 실형이 확정됐습니다. 이제 기록을 쓰는 책상은 교정시설 안에 있습니다.':legalResolution==='noncustodial'?' 수수 사실에 대한 책임은 남았습니다. 자료 제출과 반환 경위가 함께 심리됐고, 수감 없는 판결이 확정됐습니다.':' 실제 법적 결론에 따라 혐의가 입증되지 않았습니다. 정치적 별명과 법적 판단은 같은 것이 아니었습니다.';
  if(d.id==='local-museum'&&s.statements.length)text+=` 전시장에서는 당신이 남긴 말 “${s.statements[0].text}”이 재생됩니다.`;
  if(d.id==='video'&&s.statements.length)text+=` 진행자는 실제 발언 “${s.statements[0].text}”을 화면에 띄웠습니다.`;
- if(s.job===8&&d.kind==='nickname')text=d.id==='blackmoney'?'실제 수수·사용 기록의 심리 결과 '+(legalResolution==='custody'?'활동 제한과 격리 운영이 확정됐습니다. 재단과 운영 책임자의 법적 책임도 별도로 남았습니다.':'자료·관여 범위를 대조한 법적 결과가 기록됐습니다. 별명만으로 유죄를 정하지는 않았습니다.'):`정치 활동을 끝낸 차지피는 ‘${nick??d.nickname}’라는 별명까지 정치기록 서버에 보관했습니다. 공개된 답변과 수정 이력은 같은 화면에서 검색됩니다.`;
+ if(s.job===8&&d.kind==='nickname')text=d.id==='blackmoney'?'실제 수수·사용 기록의 심리 결과 '+(legalResolution==='custody'?'활동 제한과 격리 운영이 확정됐습니다. 재단과 운영 책임자의 법적 책임도 별도로 남았습니다.':'자료·관여 범위를 대조한 법적 결과가 기록됐습니다. 별명만으로 유죄를 정하지는 않았습니다.'):aiNicknameStories[d.id];
  if(nick&&d.kind!=='nickname')text+=` 한때 ${nick}라고 불렸던 당신을 알아보는 사람이 아직 있습니다.`;
  const sourceIds=[...new Set([...s.flags.filter(f=>f.startsWith('별명:')).map(f=>f.split(':')[2]),...fundingEvidence(s).map(i=>i.id),...s.interruptions.filter(i=>i.cardId==='funds-exposure').map(i=>i.id),...(s.statements[0]?[s.statements[0].id]:[])])];s.epilogue={version:1,id:d.id,job:s.job,year:s.year+years,age:s.age+years,seed,nickname:nick,sourceIds,text,artKey:d.scene+(legalResolution?'-'+legalResolution:''),...(legalResolution?{legalResolution}:{})};return s;}
 export function validEpilogue(e:any,s:State){if(e===undefined)return true;const d=epilogueDefinitions.find(d=>d.id===e?.id);return !!d&&s.stage==='ending'&&s.completed&&e.version===1&&e.job===s.job&&(d.kind!=='job'||d.job===s.job)&&Number.isInteger(e.year)&&e.year>=s.year&&e.year<=s.year+5&&Number.isInteger(e.age)&&e.age===s.age+e.year-s.year&&Number.isInteger(e.seed)&&e.seed>=0&&e.seed<=4294967295&&(e.nickname===null||typeof e.nickname==='string'&&e.nickname.length<20)&&Array.isArray(e.sourceIds)&&e.sourceIds.length<=100&&e.sourceIds.every((x:unknown)=>typeof x==='string'&&x.length<150)&&typeof e.text==='string'&&e.text.length<5000&&(!e.nickname||s.flags.some(f=>f.startsWith('별명:'+e.nickname+':')))&&(d.kind!=='nickname'||s.flags.some(f=>f.startsWith('별명:'+d.nickname+':'))||d.id==='blackmoney'&&fundingEvidence(s).length>0)&&e.artKey===d.scene+(e.legalResolution?'-'+e.legalResolution:'')&&(d.id==='blackmoney'?['custody','noncustodial','cleared'].includes(e.legalResolution):e.legalResolution===undefined);}

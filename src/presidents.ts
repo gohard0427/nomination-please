@@ -1,3 +1,4 @@
+import {sameCharacterName} from './character-names.ts';
 import {candidateFor} from './candidates.ts';
 import {partyById} from './parties.ts';
 import type {State} from './engine.ts';
@@ -14,7 +15,7 @@ export const presidents=[
  {id:'field',name:'나현장',partyId:'better',weight:8,sex:'여',style:'직접 가야 믿는 현장 정치인',quote:'일단 제가 가겠습니다.',art:8},
  {id:'all',name:'모두찬',partyId:'better',weight:8,sex:'남',style:'모두가 찬성했다고 주장하는 외교 협상가',quote:'반대한다는 말은 못 들었습니다.',art:9},
  {id:'coding',name:'남코딩',partyId:'reform',weight:10,sex:'남',style:'나라를 프로그램처럼 고치려는 개발자',quote:'전임 정부 코드를 봤습니다. 다시 짜야 합니다.',art:10},
- {id:'gpt',name:'차지피',partyId:'reform',weight:10,sex:'AI',style:'국민의 마음까지 계산하려는 AI 정치인',quote:'오류가 아닙니다. 정책입니다.',art:11}
+ {id:'gpt',name:'채지피',partyId:'reform',weight:10,sex:'AI',style:'국민의 마음까지 계산하려는 AI 정치인',quote:'오류가 아닙니다. 정책입니다.',art:11}
 ] as const;
 export type PresidentTerm={id:string;name:string;partyId:string|null;start:number;end:number;source:'background'|'election'|'player'};
 export type PresidentContact={id:string;turn:number;event:string;choice:0|1};
@@ -29,6 +30,6 @@ export function initPresidency(s:State){const p=pickPresident(s.initialSeed,0,s.
 export function syncPresidentNpc(s:State){const p=currentPresident(s);if(!p)return;const n=s.npcs[9];if(n.id===p.name)return;s.npcs[9]={...n,id:p.name,role:p.source==='player'?'대통령 당선인':'대통령',relationship:25,trust:40,memoryTags:[],knownFacts:[p.partyId??'무소속'],goals:[presidents.find(x=>x.id===p.id)?.style??'공약 이행'],secretIds:[]};}
 export function syncPresidency(s:State,through:number){if(!s.presidency)return;const before=currentPresident(s)!;let count=0;while(currentPresident(s)!.end<=through){const prev=currentPresident(s)!,p=pickPresident(s.initialSeed,s.presidency.terms.length,[...s.presidency.terms.map(p=>p.id),...(s.job===8?['gpt']:[])]);s.presidency.terms.push({id:p.id,name:p.name,partyId:p.partyId,start:prev.end,end:termEnd(prev.end),source:'background'});count++;}if(count){s.presidency.notice={from:before.name,to:currentPresident(s)!.name,count};syncPresidentNpc(s);}}
 export function nextCandidate(s:State,partyId:string){const excluded=[...(s.presidency?.terms.map(p=>p.id)??[]),...(s.job===8?['gpt']:[])];return pickPresident(s.initialSeed,(s.presidency?.terms.length??0)+s.elections.length,excluded,partyId);}
-export function settlePresident(s:State,won:boolean,name:string,partyId:string|null){if(!s.presidency||!s.calendar)return;const old=currentPresident(s)!;const start=s.calendar.day;const p=presidents.find(p=>p.name===name);const id=won?'player':p?.id??'candidate:'+name;s.presidency.terms.push({id,name:won?'당신':name,partyId,start,end:termEnd(start),source:won?'player':'election'});s.presidency.notice={from:old.name,to:won?'당신':name,count:1};syncPresidentNpc(s);}
+export function settlePresident(s:State,won:boolean,name:string,partyId:string|null){if(!s.presidency||!s.calendar)return;const old=currentPresident(s)!;const start=s.calendar.day;const p=presidents.find(p=>sameCharacterName(p.name,name));const id=won?'player':p?.id??'candidate:'+name;s.presidency.terms.push({id,name:won?'당신':name,partyId,start,end:termEnd(start),source:won?'player':'election'});s.presidency.notice={from:old.name,to:won?'당신':name,count:1};syncPresidentNpc(s);}
 
 export function presidentialName(s:State,partyId:string){if(!s.calendar)return candidateFor(partyId).name;if(['future','better','reform'].includes(partyId)&&presidents.some(p=>p.partyId===partyId&&!(s.job===8&&p.id==='gpt')&&!s.presidency!.terms.some(t=>t.id===p.id)))return nextCandidate(s,partyId).name;const c=candidateFor(partyId);return s.presidency!.terms.some(t=>t.name===c.name)?partyById(partyId,s)!.leader:c.name;}

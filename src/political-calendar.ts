@@ -1,3 +1,4 @@
+import {sameCharacterName} from './character-names.ts';
 import type {State} from './engine.ts';
 import {CALENDAR_FLAG,day,dayParts,syncPresidency,initPresidency,presidents} from './presidents.ts';
 export type PoliticalCalendar={version:1;day:number;dates:number[];previousDay:number};
@@ -26,7 +27,7 @@ export function rescheduleRetry(s:State,phase:'local'|'central'|'presidential',a
 export function calendarValid(s:any){const c=s?.calendar,p=s?.presidency,flag=s?.flags?.includes?.(CALENDAR_FLAG);if(!c&&!p)return !flag;if(!flag||!c||!p||c.version!==1||p.version!==1)return false;const num=(n:any)=>Number.isInteger(n)&&n>=day(2026)&&n<day(2200);if(!num(c.day)||!num(c.previousDay)||c.previousDay>c.day||!Array.isArray(c.dates)||c.dates.length!==s.route?.length+1||!c.dates.every(num)||c.dates.some((d:number,i:number)=>i>0&&d<c.dates[i-1])||c.dates[s.cursor]!==c.day)return false;const dt=dayParts(c.day);if(dt.year!==s.year||dt.month!==s.month||s.age!==s.year-s.birthYear)return false;
  if(!Array.isArray(p.terms)||p.terms.length<1||p.terms.length>35||!Array.isArray(p.contacts)||p.contacts.length>200)return false;
  const ids=new Set<string>();for(let i=0;i<p.terms.length;i++){const t=p.terms[i];if(typeof t.id!=='string'||typeof t.name!=='string'||t.name.length>100||!['background','election','player'].includes(t.source)||!(t.partyId===null||['future','better','reform','labor','guardian'].includes(t.partyId))||!num(t.start)||!num(t.end)||t.end!==day(dayParts(t.start).year+5,dayParts(t.start).month,dayParts(t.start).date)||i>0&&t.start!==p.terms[i-1].end||ids.has(t.id))return false;ids.add(t.id);}
- for(const t of p.terms){if(t.source==='background'&&!presidents.some(d=>d.id===t.id&&d.name===t.name&&d.partyId===t.partyId))return false;if(t.source==='player'&&(t.id!=='player'||t.name!=='당신'||t.partyId!==s.partyId))return false;}const last=p.terms.at(-1);if(last.start>c.day||last.end<=c.day)return false;
+ for(const t of p.terms){if(t.source==='background'&&!presidents.some(d=>d.id===t.id&&sameCharacterName(d.name,t.name)&&d.partyId===t.partyId))return false;if(t.source==='player'&&(t.id!=='player'||t.name!=='당신'||t.partyId!==s.partyId))return false;}const last=p.terms.at(-1);if(last.start>c.day||last.end<=c.day)return false;
  if(!p.contacts.every((x:any)=>ids.has(x.id)&&Number.isInteger(x.turn)&&x.turn>=0&&x.turn<=s.turn&&typeof x.event==='string'&&[0,1].includes(x.choice)))return false;
  if(p.debtId!==undefined&&!ids.has(p.debtId)||p.debtAccepted!==undefined&&typeof p.debtAccepted!=='boolean')return false;
  if(p.notice!==undefined&&(typeof p.notice.from!=='string'||typeof p.notice.to!=='string'||!Number.isInteger(p.notice.count)||p.notice.count<1||p.notice.count>35))return false;return true;
