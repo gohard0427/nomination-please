@@ -135,7 +135,7 @@ export function applyChoice(current:State,event:Card,index:0|1):State{
   if(card.id==='friend-leak'){s.flags.push('동기 통화 보도');s.pending=s.pending.filter(p=>p.id!==card.id);s.legal={status:'별도 문의 경위 검증 중',truth:'동기에게 비공식 절차 문의한 통화 원본 존재',conclusion:'경력 사건과 별도, 아직 위법 단정 불가',revealed:true};const due=slotsForState(s,newRoute).findIndex((slot,i)=>i>s.cursor+2&&slot==='?presidential');s.pending.push({id:'friend-verdict',due,source:card.id});}
   if(card.id==='friend-verdict'){s.pending=s.pending.filter(p=>p.id!==card.id);s.legal={status:'검증 종결',truth:'비공식 절차 문의 확인, 결과 변경 지시 증거 없음',conclusion:'부정청탁 범죄로 단정할 증거 없음. 윤리적 책임은 별도',revealed:true};}
  }
- const npc=s.npcs.find(n=>card.speaker.includes(n.id));if(npc){npc.relationship=clamp(npc.relationship+(index===0?4:1),-100,100);npc.trust=clamp(npc.trust+(index===0?2:0),0,100);npc.memoryTags.push(card.id+':'+index)}
+ const npc=s.npcs.find(n=>card.speaker.includes(n.id));if(npc){npc.relationship=clamp(npc.relationship+(s.job===8&&card.id==='housing'?(index===0?-6:2):(index===0?4:1)),-100,100);npc.trust=clamp(npc.trust+(index===0?2:0),0,100);npc.memoryTags.push(card.id+':'+index)}
  if(card.id==='career-rival-meet'){s.npcs[2].trust=clamp(s.npcs[2].trust+(index===1?10:3),0,100);s.npcs[2].memoryTags.push(index===1?'공동 현장 조사':'공개 정책 토론');}
  if(card.id==='rival'){s.npcs[2].knownFacts.push('지도부 전략공천 논의');s.npcs[2].memoryTags.push('독자 경선 준비')}
  if(card.id==='primary'||parseRetryQuestion(card.id)?.slot===2&&parseRetryQuestion(card.id)?.phase==='presidential'){s.flags.push('대선 후보 검증 완료');confirmOpponent(s);out.news.unshift(s.partyId?'당원과 시민의 경선 평가를 거쳐 대선 후보로 확정됐습니다.':'전국 조직과 추천 절차를 갖춰 독자 대선 후보로 나섭니다.')}

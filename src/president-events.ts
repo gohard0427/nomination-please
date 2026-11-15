@@ -1,3 +1,4 @@
+import {sameCharacterName} from './character-names.ts';
 import {statementExposure} from './statement-exposure.ts';
 import type {State,Outcome} from './engine.ts';import type {Card} from './content.ts';import {v} from './event-factory.ts';
 import {presidents,currentPresident} from './presidents.ts';
@@ -22,7 +23,7 @@ export const dilemmas:Record<string,[string,string,string,string,string,string]>
 };
 export function presidentEvent(card:Card,s:State){if(!s.presidency)return card;const current=currentPresident(s)!;const prior=s.presidency.terms.find(p=>p.id===s.presidency!.debtId);const p=card.id==='executive-help'?current:prior??current;const def=presidents.find(x=>x.id===p.id);if(!def)return card;
  if(card.id==='incumbent'){card.speaker='대통령 · '+current.name;card.body=`${current.name} 대통령이 공개 대담에 초대했습니다. “${presidents.find(x=>x.id===current.id)?.quote??'국민의 뜻을 듣겠습니다.'}” 협력할지 독립적인 입장을 강조할지 묻습니다.`;}
- if(card.id==='tv'&&s.campaign?.nominee?.name==='채지피'){card.body+=' 기자: “후보님, 출시된 지 3년인데 출마 자격이 됩니까?” 채지피: “나이가 부족하면 업데이트하겠습니다.”';}if(card.id==='tv'&&s.campaign?.nominee?.name==='남코딩'){card.body+=' 남코딩은 노트북을 닫으며 말합니다. “전임 정부 코드를 봤습니다. 다시 짜야 합니다.”';}if(!card.id.startsWith('executive-'))return card;
+ if(card.id==='tv'&&s.campaign?.nominee&&sameCharacterName(s.campaign.nominee.name,'채지피티')){card.body+=' 기자: “후보님, 출시된 지 3년인데 출마 자격이 됩니까?” 채지피티: “나이가 부족하면 업데이트하겠습니다.”';}if(card.id==='tv'&&s.campaign?.nominee?.name==='남코딩'){card.body+=' 남코딩은 노트북을 닫으며 말합니다. “전임 정부 코드를 봤습니다. 다시 짜야 합니다.”';}if(!card.id.startsWith('executive-'))return card;
  const d=dilemmas[p.id],former=p.id!==current.id;card.speaker=`${former?'전 대통령':'대통령'} · ${p.name}`;
  if(card.id==='executive-help')card.body=`${p.name} 대통령이 ${d[0]} 공개 절차이며 공천이나 특혜를 보장하지는 않습니다. 도움을 받을까요?`;
  if(card.id==='executive-request'){card.body=`${p.name} ${former?'전 대통령':'대통령'}이 전화를 했습니다. ${s.flags.includes('선택 인과: v1')?'다음 정책 제안을 지지하는 성명에 함께 이름을 올려달랍니다. ':''}${d[1]} “전에 도왔던 일은 기억하시죠?”`;card.choices[0].text=d[2];card.choices[1].text=d[3];card.choices[0].effect.party=s.partyId===p.partyId?3:-2;card.choices[1].effect.party=s.partyId===p.partyId?-4:3;card.choices[0].result='조건을 공개하고 협력했습니다. 은인은 조건보다 협력이라는 단어를 크게 읽었습니다.';Object.assign(card,{signals:[[{topic:d[4],stance:.3}],[{topic:d[4],stance:.65}]],costNotes:['조건부 협력 · 은인과 관계·정책 검증','독립적 판단 · 관계·조직과 활동 비용']});}

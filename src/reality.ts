@@ -94,7 +94,7 @@ export function chooseReality(s:State,card:Card,index:0|1):RealityNote|undefined
  // 기존 회차의 과거 결과에 소급해 자료를 만들지 않는다. 업그레이드 뒤 새 선택부터 비율을 센다.
  const seen=new Set(s.history.flatMap(h=>h.reality?[h.reality.id]:[]));
  if(!forced.has(card.id)&&!realityDue(s))return;
- const contextual:string[]=[];
+ const contextual:string[]=[];if(s.job===8&&card.id==='housing')contextual.push('family-conflict');
  const canUse=(id:string)=>!seen.has(id);
  if(s.flags.includes('선택과 능력: v0.14')){
   const text=card.title+' '+card.body;
@@ -122,9 +122,9 @@ export function chooseReality(s:State,card:Card,index:0|1):RealityNote|undefined
   if(card.id==='debate-politics'&&/공청회|다수|표결/.test(text))contextual.push('majority-limits');
   if(card.id==='debate-politics'&&/은인|자리|선발/.test(text))contextual.push('recruit-opportunity');
  }
- const ordered=realityEntries.slice().sort((a,b)=>{const ai=contextual.indexOf(a.id),bi=contextual.indexOf(b.id);if(ai>=0||bi>=0)return ai<0?1:bi<0?-1:ai-bi;return Number(b.id.startsWith('housing-'))-Number(a.id.startsWith('housing-'));});const entry=ordered.find(e=>(contextual.includes(e.id)||e.cards.includes(realityLinks[card.id]??card.id))&&canUse(e.id)&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
+ const ordered=realityEntries.slice().sort((a,b)=>{const ai=contextual.indexOf(a.id),bi=contextual.indexOf(b.id);if(ai>=0||bi>=0)return ai<0?1:bi<0?-1:ai-bi;return Number(b.id.startsWith('housing-'))-Number(a.id.startsWith('housing-'));});const entry=ordered.find(e=>(contextual.includes(e.id)||e.cards.includes(realityLinks[card.id]??card.id))&&canUse(e.id)&&!(s.job===8&&card.id==='housing'&&e.id!=='family-conflict')&&!(!forced.has(card.id)&&s.route.slice(s.cursor+1).some(id=>forced.has(id)&&e.cards.includes(id)))&&!(e.id==='family-conflict'&&card.id==='housing'&&card.topic!=='이해충돌')&&!(e.id==='heat-2026'&&card.id==='home-flood'));
  if(!entry)return;
- const note:RealityNote={id:entry.id,version:1,cardId:card.id,title:entry.title,body:entry.body,reflection:realityLinks[card.id]?'선택과 관련된 현실의 조건입니다. 특정 정책의 효과를 보장하지 않습니다.':entry.reflections[index],asOf:entry.asOf,checkedOn:entry.id.startsWith('housing-')?'2026-10-25':'2026-10-24',limit:entry.limit,sources:entry.sources.map(x=>({...x}))};note.brief=briefFor(note);return note;
+ const note:RealityNote={id:entry.id,version:1,cardId:card.id,title:entry.title,body:entry.body,reflection:realityLinks[card.id]?'선택과 관련된 현실의 조건입니다. 특정 정책의 효과를 보장하지 않습니다.':entry.reflections[index],asOf:entry.asOf,checkedOn:entry.id.startsWith('housing-')?'2026-10-25':'2026-10-24',limit:entry.limit,sources:entry.sources.map(x=>({...x}))};if(s.job===8&&entry.id==='family-conflict'){note.title='공공사업과 사적 이해관계';note.body='이해충돌방지 제도에는 사적이해관계 신고와 회피 등 직무의 공정성을 위한 절차가 있습니다. 기관의 사업과 공직자의 실제 관여를 구분해 확인해야 합니다.';note.limit='게임 속 AI와 운영재단에 현실 법률이 동일하게 적용된다고 뜻하지 않습니다. 독립 심사만으로 이해충돌 위험이 모두 없어지는 것도 아닙니다.';}note.brief=briefFor(note);return note;
 }
 export function validReality(value:unknown):value is RealityNote{
  const x=value as RealityNote;const text=(s:unknown)=>typeof s==='string'&&s.length>0&&s.length<=2400;

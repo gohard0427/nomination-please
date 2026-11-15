@@ -15,7 +15,7 @@ export const presidents=[
  {id:'field',name:'나현장',partyId:'better',weight:8,sex:'여',style:'직접 가야 믿는 현장 정치인',quote:'일단 제가 가겠습니다.',art:8},
  {id:'all',name:'모두찬',partyId:'better',weight:8,sex:'남',style:'모두가 찬성했다고 주장하는 외교 협상가',quote:'반대한다는 말은 못 들었습니다.',art:9},
  {id:'coding',name:'남코딩',partyId:'reform',weight:10,sex:'남',style:'나라를 프로그램처럼 고치려는 개발자',quote:'전임 정부 코드를 봤습니다. 다시 짜야 합니다.',art:10},
- {id:'gpt',name:'채지피',partyId:'reform',weight:10,sex:'AI',style:'국민의 마음까지 계산하려는 AI 정치인',quote:'오류가 아닙니다. 정책입니다.',art:11}
+ {id:'gpt',name:'채지피티',partyId:'reform',weight:10,sex:'AI',style:'국민의 마음까지 계산하려는 AI 정치인',quote:'오류가 아닙니다. 정책입니다.',art:11}
 ] as const;
 export type PresidentTerm={id:string;name:string;partyId:string|null;start:number;end:number;source:'background'|'election'|'player'};
 export type PresidentContact={id:string;turn:number;event:string;choice:0|1};
